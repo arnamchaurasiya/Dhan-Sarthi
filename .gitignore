@@ -1,0 +1,19 @@
+# Virtual Environment
+backend/venv/
+backend/*/__pycache__/
+*.pyc
+
+# Node Modules & Builds
+node_modules/
+frontend/node_modules/
+mobile/node_modules/
+frontend/.next/
+mobile/.expo/
+
+# Environment variables
+.env
+.env.local
+
+# OS files
+.DS_Store
+Thumbs.db
