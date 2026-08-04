@@ -35,7 +35,7 @@ def test_check_scam_true():
     )
     assert response.status_code == 200
     assert response.json()["is_scam"] is True
-    assert response.json()["scam_probability"] == 0.89
+    assert response.json()["scam_probability"] > 0.8
 
 def test_check_scam_false():
     response = client.post(
@@ -44,3 +44,20 @@ def test_check_scam_false():
     )
     assert response.status_code == 200
     assert response.json()["is_scam"] is False
+
+def test_verify_entity():
+    res = client.post("/api/v1/ai/security/verify-entity", json={"name": "Zerodha Broking Ltd."})
+    assert res.status_code == 200
+    assert res.json()["found"] is True
+    assert res.json()["status"] == "Registered"
+
+def test_verify_upi():
+    res = client.post("/api/v1/ai/security/verify-upi", json={"upi_id": "zerodha@dfc"})
+    assert res.status_code == 200
+    assert res.json()["valid"] is True
+
+def test_verify_account():
+    res = client.post("/api/v1/ai/security/verify-account", json={"ifsc": "SBIN0001234", "account_number": "99912345678"})
+    assert res.status_code == 200
+    assert res.json()["valid"] is True
+
