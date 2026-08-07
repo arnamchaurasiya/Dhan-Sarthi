@@ -10,7 +10,7 @@ import {
   Modal,
   Pressable
 } from 'react-native';
-import Svg, { Path, Defs, LinearGradient, Stop, Circle, Rect, Text as SvgText, G } from 'react-native-svg';
+import Svg, { Path, Defs, LinearGradient, Stop, Circle, Rect, Text as SvgText, G, Line } from 'react-native-svg';
 import axios from 'axios';
 import {
   TrendingUp,
@@ -33,7 +33,7 @@ import {
 } from 'lucide-react-native';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const API_BASE = 'http://10.169.95.9:8000';
+const API_BASE = 'https://dhan-sarthi.onrender.com';
 
 // Fallback holdings dataset with rich DPI & asset metadata
 const DEFAULT_HOLDINGS = [
@@ -46,8 +46,8 @@ const DEFAULT_HOLDINGS = [
     avg_price: 3500.0,
     current_price: 3821.0,
     total_value: 191050.0,
-    day_change: 2.4,
-    sparkline: [3710, 3730, 3750, 3740, 3790, 3821],
+    day_change: -2.4,
+    sparkline: [3821, 3790, 3750, 3740, 3730, 3710],
     isin: 'INE467B01029',
     stcg: 0,
     ltcg: 16050,
@@ -63,8 +63,8 @@ const DEFAULT_HOLDINGS = [
     avg_price: 1600.0,
     current_price: 1910.5,
     total_value: 191050.0,
-    day_change: 1.8,
-    sparkline: [1860, 1875, 1890, 1885, 1900, 1910.5],
+    day_change: -1.8,
+    sparkline: [1910.5, 1900, 1890, 1885, 1875, 1860],
     isin: 'INE040A01034',
     stcg: 31050,
     ltcg: 0,
@@ -275,6 +275,15 @@ export default function DarpanScreen() {
   const fillAreaD = `${linePathD} L ${svgWidth} ${svgHeight} L 0 ${svgHeight} Z`;
   const activeCoord = pointCoords[activePointIdx] || pointCoords[pointCoords.length - 1];
 
+  const handleChartTouch = (locationX: number) => {
+    if (svgWidth <= 0 || !chartPoints || chartPoints.length === 0) return;
+    const clampedX = Math.max(0, Math.min(svgWidth, locationX));
+    const ratio = clampedX / svgWidth;
+    const nearestIdx = Math.round(ratio * (chartPoints.length - 1));
+    const clampedIdx = Math.max(0, Math.min(chartPoints.length - 1, nearestIdx));
+    setActivePointIdx(clampedIdx);
+  };
+
   const handleOpenDetail = (holding: any) => {
     setSelectedHolding(holding);
     setModalVisible(true);
@@ -346,8 +355,27 @@ export default function DarpanScreen() {
             ))}
           </View>
 
+          {/* Live Values Header */}
+          {activeCoord && (
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', marginBottom: 6, marginTop: 4 }}>
+              <Text style={{ fontSize: 11, color: '#1b3a6b', fontWeight: 'bold' }}>
+                ₹{activeCoord.val.toLocaleString('en-IN')}
+              </Text>
+              <Text style={{ fontSize: 10, color: '#64748b', marginLeft: 4, fontWeight: '500' }}>
+                • {activeCoord.date}
+              </Text>
+            </View>
+          )}
+
           {/* Interactive SVG Trend Chart */}
-          <View style={styles.chartWrapper}>
+          <View
+            style={styles.chartWrapper}
+            onStartShouldSetResponder={() => true}
+            onMoveShouldSetResponder={() => true}
+            onResponderGrant={(evt) => handleChartTouch(evt.nativeEvent.locationX)}
+            onResponderMove={(evt) => handleChartTouch(evt.nativeEvent.locationX)}
+            onResponderRelease={(evt) => handleChartTouch(evt.nativeEvent.locationX)}
+          >
             <Svg width={svgWidth} height={svgHeight}>
               <Defs>
                 <LinearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
@@ -355,6 +383,22 @@ export default function DarpanScreen() {
                   <Stop offset="100%" stopColor="#4f46e5" stopOpacity="0.0" />
                 </LinearGradient>
               </Defs>
+
+              {/* Invisible Full Width Touch Target */}
+              <Rect x={0} y={0} width={svgWidth} height={svgHeight} fill="transparent" />
+
+              {/* Vertical Crosshair Scrubber Line */}
+              {activeCoord && (
+                <Line
+                  x1={activeCoord.x}
+                  y1={0}
+                  x2={activeCoord.x}
+                  y2={svgHeight}
+                  stroke="#3b82f6"
+                  strokeWidth={1.5}
+                  strokeDasharray="4, 4"
+                />
+              )}
 
               {/* Area Fill */}
               <Path d={fillAreaD} fill="url(#chartGradient)" />
@@ -365,13 +409,18 @@ export default function DarpanScreen() {
               {/* Interactive Data Point Touch Triggers */}
               {pointCoords.map((pt, i) => (
                 <G key={i} onPress={() => setActivePointIdx(i)}>
+                  {/* Expanded 48px touch circle */}
+                  <Circle cx={pt.x} cy={pt.y} r={24} fill="transparent" />
+                  {i === activePointIdx && (
+                    <Circle cx={pt.x} cy={pt.y} r={10} fill="#3b82f6" fillOpacity={0.25} />
+                  )}
                   <Circle
                     cx={pt.x}
                     cy={pt.y}
-                    r={i === activePointIdx ? 6 : 3}
+                    r={i === activePointIdx ? 6 : 3.5}
                     fill={i === activePointIdx ? '#ffffff' : '#3b82f6'}
                     stroke={i === activePointIdx ? '#1b3a6b' : '#3b82f6'}
-                    strokeWidth={i === activePointIdx ? 3 : 1}
+                    strokeWidth={i === activePointIdx ? 3 : 1.5}
                   />
                 </G>
               ))}
@@ -380,20 +429,121 @@ export default function DarpanScreen() {
             {/* Active Data Point Tooltip Callout */}
             {activeCoord && (
               <View
+                pointerEvents="none"
                 style={[
                   styles.chartTooltipCallout,
                   {
                     left: Math.min(Math.max(activeCoord.x - 55, 0), svgWidth - 110),
-                    top: Math.max(activeCoord.y - 45, 0),
+                    top: Math.max(activeCoord.y - 48, 0),
                   },
                 ]}
               >
                 <Text style={styles.tooltipValText}>₹{activeCoord.val.toLocaleString('en-IN')}</Text>
-                <Text style={styles.tooltipDateText}>{activeCoord.date}</Text>
+                <Text style={styles.tooltipDateText}>Time: {activeCoord.date}</Text>
               </View>
             )}
           </View>
         </View>
+
+        {/* Verified Multi-Asset Holdings Header & Category Filter Tabs */}
+        <View style={styles.holdingsHeaderRow}>
+          <Text style={styles.sectionTitle}>Verified Multi-Asset Holdings</Text>
+          <View style={styles.holdingCountBadge}>
+            <Text style={styles.holdingCountText}>{filteredHoldings.length} Assets</Text>
+          </View>
+        </View>
+
+        {/* Holdings Filter Chips */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScrollView}>
+          {['All', 'Direct Equity', 'Mutual Funds', 'Corporate Bonds', 'REITs & InvITs'].map((cat) => (
+            <TouchableOpacity
+              key={cat}
+              style={[
+                styles.filterTab,
+                selectedCategory === cat && styles.filterTabActive
+              ]}
+              onPress={() => setSelectedCategory(cat)}
+            >
+              <Text style={[styles.filterTabText, selectedCategory === cat && styles.filterTabTextActive]}>
+                {cat}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        {/* Holdings List with Sparklines Placed Below Money & Source Badges */}
+        {filteredHoldings.map((h: any, idx: number) => {
+          const defaultChanges: Record<string, number> = {
+            'TCS': -2.4,
+            'HDFCBANK': -1.8,
+            'PPFCF': 0.9,
+            'UTINIFTY': 0.6,
+            'INCREDBOND': 0.2,
+            'NEXUSREIT': 1.2
+          };
+
+          const rawChange = (typeof h.day_change === 'number' && !isNaN(h.day_change))
+            ? h.day_change
+            : (defaultChanges[h.symbol] !== undefined ? defaultChanges[h.symbol] : (idx < 2 ? -2.4 : 0.9));
+
+          const isRed = rawChange < 0;
+          const isPositive = !isRed;
+          const changeVal = Math.abs(rawChange).toFixed(1);
+
+          return (
+            <TouchableOpacity
+              key={idx}
+              style={styles.holdingCardItem}
+              onPress={() => handleOpenDetail(h)}
+              activeOpacity={0.7}
+            >
+              <View style={styles.holdingCardLeft}>
+                <View style={styles.avatarWrap}>
+                  <Text style={styles.avatarText}>{h.symbol.slice(0, 2)}</Text>
+                </View>
+                <View style={styles.holdingMeta}>
+                  <Text style={styles.holdingSymbol}>{h.symbol}</Text>
+                  <Text style={styles.holdingName} numberOfLines={1}>{h.name}</Text>
+                  <View style={styles.sourceTag}>
+                    <ShieldCheck color="#16a34a" size={10} />
+                    <Text style={styles.sourceTagText}>{h.broker}</Text>
+                  </View>
+                </View>
+              </View>
+
+              {/* Right Value, Percentage & Sparkline Graph Below Money */}
+              <View style={styles.holdingCardRight}>
+                <Text style={styles.holdingValue}>₹{h.total_value.toLocaleString('en-IN')}</Text>
+                
+                {/* Written Percentage Row */}
+                <View style={styles.dayChangeRow}>
+                  {isPositive ? (
+                    <TrendingUp color="#16a34a" size={12} />
+                  ) : (
+                    <TrendingDown color="#dc2626" size={12} />
+                  )}
+                  <Text style={[styles.dayChangeText, { color: isPositive ? '#16a34a' : '#dc2626' }]}>
+                    {' '}{isPositive ? '+' : '-'}{changeVal}%
+                  </Text>
+                </View>
+
+                {/* Sparkline Graph Placed Below Money */}
+                <View style={{ marginTop: 4 }}>
+                  <Svg width={54} height={18}>
+                    <Path
+                      d={isPositive
+                        ? "M 0 14 C 10 14, 16 10, 24 9 C 32 8, 40 4, 54 2"
+                        : "M 0 2 C 10 2, 16 6, 24 8 C 32 10, 40 14, 54 16"}
+                      fill="none"
+                      stroke={isPositive ? '#16a34a' : '#dc2626'}
+                      strokeWidth="2.2"
+                    />
+                  </Svg>
+                </View>
+              </View>
+            </TouchableOpacity>
+          );
+        })}
 
         {/* Portfolio Distribution Section */}
         <View style={styles.card}>
@@ -492,89 +642,9 @@ export default function DarpanScreen() {
 
           <TouchableOpacity style={styles.exportBtn}>
             <Sparkles color="#ffffff" size={16} />
-            <Text style={styles.exportBtnText}> Export Form 26AS / Capital Gains Summary</Text>
+            <Text style={styles.exportBtnText}>Capital Gains Summary</Text>
           </TouchableOpacity>
         </View>
-
-        {/* Verified Multi-Asset Holdings Header & Category Filter Tabs */}
-        <View style={styles.holdingsHeaderRow}>
-          <Text style={styles.sectionTitle}>Verified Multi-Asset Holdings</Text>
-          <View style={styles.holdingCountBadge}>
-            <Text style={styles.holdingCountText}>{filteredHoldings.length} Assets</Text>
-          </View>
-        </View>
-
-        {/* Holdings Filter Chips */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScrollView}>
-          {['All', 'Direct Equity', 'Mutual Funds', 'Corporate Bonds', 'REITs & InvITs'].map((cat) => (
-            <TouchableOpacity
-              key={cat}
-              style={[
-                styles.filterTab,
-                selectedCategory === cat && styles.filterTabActive
-              ]}
-              onPress={() => setSelectedCategory(cat)}
-            >
-              <Text style={[styles.filterTabText, selectedCategory === cat && styles.filterTabTextActive]}>
-                {cat}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-
-        {/* Holdings List with Sparklines & Source Badges */}
-        {filteredHoldings.map((h: any, idx: number) => {
-          const isPositive = h.day_change >= 0;
-          return (
-            <TouchableOpacity
-              key={idx}
-              style={styles.holdingCardItem}
-              onPress={() => handleOpenDetail(h)}
-              activeOpacity={0.7}
-            >
-              <View style={styles.holdingCardLeft}>
-                <View style={styles.avatarWrap}>
-                  <Text style={styles.avatarText}>{h.symbol.slice(0, 2)}</Text>
-                </View>
-                <View style={styles.holdingMeta}>
-                  <Text style={styles.holdingSymbol}>{h.symbol}</Text>
-                  <Text style={styles.holdingName} numberOfLines={1}>{h.name}</Text>
-                  <View style={styles.sourceTag}>
-                    <ShieldCheck color="#16a34a" size={10} />
-                    <Text style={styles.sourceTagText}>{h.broker}</Text>
-                  </View>
-                </View>
-              </View>
-
-              {/* Sparkline Graph */}
-              <View style={styles.sparklineWrap}>
-                <Svg width={46} height={20}>
-                  <Path
-                    d={`M 0 16 L 9 12 L 18 14 L 27 8 L 36 10 L 45 ${isPositive ? '3' : '17'}`}
-                    fill="none"
-                    stroke={isPositive ? '#16a34a' : '#dc2626'}
-                    strokeWidth="2"
-                  />
-                </Svg>
-              </View>
-
-              {/* Right Value & Returns */}
-              <View style={styles.holdingCardRight}>
-                <Text style={styles.holdingValue}>₹{h.total_value.toLocaleString('en-IN')}</Text>
-                <View style={styles.dayChangeRow}>
-                  {isPositive ? (
-                    <TrendingUp color="#16a34a" size={12} />
-                  ) : (
-                    <TrendingDown color="#dc2626" size={12} />
-                  )}
-                  <Text style={[styles.dayChangeText, { color: isPositive ? '#16a34a' : '#dc2626' }]}>
-                    {' '}{isPositive ? '+' : ''}{h.day_change}%
-                  </Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          );
-        })}
 
         {/* DPI Connected Data Sources Footer */}
         <View style={styles.dpiFooterCard}>
@@ -883,6 +953,7 @@ const styles = StyleSheet.create({
     color: '#1e293b',
     fontSize: 15,
     fontWeight: 'bold',
+    flex: 1,
   },
 
   /* Distribution Bar */
@@ -1022,7 +1093,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#1b3a6b',
     paddingVertical: 10,
+    paddingHorizontal: 16,
     borderRadius: 12,
+    gap: 6,
   },
   exportBtnText: {
     color: '#ffffff',

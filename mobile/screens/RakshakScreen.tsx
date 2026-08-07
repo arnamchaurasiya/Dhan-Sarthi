@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Activi
 import axios from 'axios';
 import { ShieldCheck, ShieldAlert, AlertTriangle, ScanSearch, CheckCircle2, QrCode, Keyboard, Building2, Search, Check } from 'lucide-react-native';
 
-const API_BASE = 'http://10.169.95.9:8000';
+const API_BASE = 'https://dhan-sarthi.onrender.com';
 
 export default function RakshakScreen() {
   // Entity Verification State

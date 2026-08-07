@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator 
 import axios from 'axios';
 import { Fingerprint, CheckCircle2 } from 'lucide-react-native';
 
-const API_BASE = 'http://10.169.95.9:8000';
+const API_BASE = 'https://dhan-sarthi.onrender.com';
 
 export default function EkycScreen({ navigation }: any) {
   const [pan, setPan] = useState('ABCDE1234F');

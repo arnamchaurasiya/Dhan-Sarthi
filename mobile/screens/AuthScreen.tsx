@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator 
 import axios from 'axios';
 import { ShieldCheck } from 'lucide-react-native';
 
-const API_BASE = 'http://10.169.95.9:8000';
+const API_BASE = 'https://dhan-sarthi.onrender.com';
 
 export default function AuthScreen({ navigation }: any) {
   const [phone, setPhone] = useState('9876543210');
