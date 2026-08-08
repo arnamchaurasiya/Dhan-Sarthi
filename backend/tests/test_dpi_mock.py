@@ -20,7 +20,7 @@ def test_fetch_holdings_success():
     assert "summary" in data["data"]
     assert "holdings" in data["data"]
     assert data["data"]["summary"]["total_net_worth"] > 0
-    assert len(data["data"]["holdings"]) == 5
+    assert len(data["data"]["holdings"]) == 7
 
 def test_fetch_holdings_failure():
     response = client.get("/api/v1/mock-dpi/aa/fetch-holdings/invalid-handle")

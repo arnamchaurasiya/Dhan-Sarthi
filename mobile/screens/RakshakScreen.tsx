@@ -419,6 +419,7 @@ const styles = StyleSheet.create({
   },
   contentPadding: {
     padding: 16,
+    paddingBottom: 110,
   },
   // Icon Badges & Headers (for Entity & Scam Scanner)
   iconBadgeBlue: {

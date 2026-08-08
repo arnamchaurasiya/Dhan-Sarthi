@@ -123,12 +123,13 @@ export default function DhanDarpan() {
       setData({
         summary: { total_net_worth: 793450, todays_gain: 48240, todays_gain_percentage: 6.47 },
         holdings: [
-          { symbol: 'TCS', asset_class: 'Direct Equity', broker: 'Zerodha (CDSL)', quantity: 50, total_value: 191050, day_change: -2.4 },
-          { symbol: 'HDFCBANK', asset_class: 'Direct Equity', broker: 'Zerodha (CDSL)', quantity: 100, total_value: 191050, day_change: -1.8 },
-          { symbol: 'PPFCF', asset_class: 'Mutual Funds', broker: 'Groww (CAMS)', quantity: 2500.5, total_value: 181050, day_change: 0.9 },
-          { symbol: 'UTINIFTY', asset_class: 'Mutual Funds', broker: 'Kuvera (KFintech)', quantity: 600, total_value: 89300, day_change: 0.6 },
-          { symbol: 'INCREDBOND', asset_class: 'Corporate Bonds', broker: 'Dhan Sarthi (Direct)', quantity: 1, total_value: 101000, day_change: 0.2 },
-          { symbol: 'NEXUSREIT', asset_class: 'REITs & InvITs', broker: 'Dhan Sarthi (Direct)', quantity: 300, total_value: 40000, day_change: 1.2 }
+          { symbol: 'TCS', asset_class: 'Equity', broker: 'Zerodha (CDSL)', quantity: 50, total_value: 218200, day_change: -2.4 },
+          { symbol: 'HDFCBANK', asset_class: 'Equity', broker: 'Zerodha (CDSL)', quantity: 100, total_value: 218197, day_change: -1.8 },
+          { symbol: 'PPFCF', asset_class: 'Mutual Funds', broker: 'Groww (CAMS)', quantity: 2500.5, total_value: 130000, day_change: 0.9 },
+          { symbol: 'UTINIFTY', asset_class: 'Mutual Funds', broker: 'Kuvera (KFintech)', quantity: 450, total_value: 68362, day_change: 0.6 },
+          { symbol: 'INCREDBOND', asset_class: 'Fixed Income', broker: 'Dhan Sarthi (Direct)', quantity: 1, total_value: 79345, day_change: 0.2 },
+          { symbol: 'SGB2030', asset_class: 'Gold', broker: 'RBI Retail Direct', quantity: 8, total_value: 55541, day_change: 0.8 },
+          { symbol: 'NEXUSREIT', asset_class: 'REITs', broker: 'Dhan Sarthi (Direct)', quantity: 180, total_value: 23805, day_change: 1.2 }
         ]
       });
       setLoading(false);
@@ -161,7 +162,7 @@ export default function DhanDarpan() {
     return acc;
   }, []);
 
-  const COLORS = ["#1B3A6B", "#2563EB", "#16A34A", "#D97706"];
+  const COLORS = ["#1B3A6B", "#2563EB", "#14B8A6", "#EAB308", "#F97316"];
   const currentChart = CHART_DATA_BY_TIMEFRAME[selectedHorizon] || CHART_DATA_BY_TIMEFRAME['1D'];
 
   return (
@@ -198,7 +199,7 @@ export default function DhanDarpan() {
                 </div>
                 <span className="text-xs font-semibold px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200">Live Sync</span>
               </div>
-              
+
               <div className="flex flex-wrap items-baseline justify-between gap-2 mb-4">
                 <div className="text-4xl font-extrabold text-[#1B3A6B] tracking-tight">
                   ₹{summary.total_net_worth.toLocaleString('en-IN')}
@@ -215,11 +216,10 @@ export default function DhanDarpan() {
                   <button
                     key={h}
                     onClick={() => setSelectedHorizon(h)}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-                      selectedHorizon === h
+                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${selectedHorizon === h
                         ? "bg-[#1B3A6B] text-white shadow-sm"
                         : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                    }`}
+                      }`}
                   >
                     {h}
                   </button>
@@ -233,8 +233,8 @@ export default function DhanDarpan() {
                 <AreaChart data={currentChart.points} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
                   <defs>
                     <linearGradient id="netWorthGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#2563eb" stopOpacity={0.35}/>
-                      <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#2563eb" stopOpacity={0.35} />
+                      <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis dataKey="date" hide />
@@ -277,32 +277,42 @@ export default function DhanDarpan() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Asset Allocation Chart */}
-          <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm flex flex-col items-center justify-center">
-            <div className="flex items-center space-x-2 self-start mb-2">
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+            <div className="flex items-center space-x-2 mb-2">
               <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
                 <Layers size={18} />
               </div>
-              <h2 className="text-slate-700 font-bold text-base">Asset Allocation</h2>
+              <h2 className="text-slate-800 font-bold text-base">Asset Class Distribution</h2>
             </div>
-            <div className="w-full h-56">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={assetAllocation} innerRadius={55} outerRadius={75} paddingAngle={4} dataKey="value">
-                    {assetAllocation.map((entry: any, index: number) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value: any) => `₹${Number(value).toLocaleString('en-IN')}`} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="flex flex-wrap gap-3 mt-2 justify-center">
-              {assetAllocation.map((item: any, idx: number) => (
-                <div key={item.name} className="flex items-center text-xs font-semibold text-slate-600 bg-slate-50 px-2.5 py-1 rounded-full border border-slate-200">
-                  <div className="w-2.5 h-2.5 rounded-full mr-1.5" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></div>
-                  {item.name}
-                </div>
-              ))}
+            <div className="flex items-center justify-between gap-4 mt-2">
+              {/* Left Legend */}
+              <div className="space-y-2 flex-1">
+                {assetAllocation.map((item: any, idx: number) => {
+                  const pct = summary?.total_net_worth ? (item.value / summary.total_net_worth * 100).toFixed(1) : '0.0';
+                  return (
+                    <div key={item.name} className="flex items-center justify-between text-xs font-semibold text-slate-700 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
+                      <div className="flex items-center">
+                        <div className="w-2.5 h-2.5 rounded-full mr-2" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></div>
+                        <span>{item.name}</span>
+                      </div>
+                      <span className="font-bold text-[#1B3A6B] ml-2">{pct}%</span>
+                    </div>
+                  );
+                })}
+              </div>
+              {/* Right Pie Chart */}
+              <div className="w-36 h-36 shrink-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={assetAllocation} innerRadius={35} outerRadius={55} paddingAngle={3} dataKey="value">
+                      {assetAllocation.map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value: any) => `₹${Number(value).toLocaleString('en-IN')}`} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
 
@@ -319,41 +329,41 @@ export default function DhanDarpan() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                  {holdings.map((h: any, idx: number) => {
-                    const isRed = idx < 2 || (h.day_change !== undefined && h.day_change < 0);
-                    const isPositive = !isRed;
-                    const changeVal = h.day_change !== undefined ? Math.abs(h.day_change).toFixed(1) : (isRed ? '2.4' : '0.9');
+                {holdings.map((h: any, idx: number) => {
+                  const isRed = idx < 2 || (h.day_change !== undefined && h.day_change < 0);
+                  const isPositive = !isRed;
+                  const changeVal = h.day_change !== undefined ? Math.abs(h.day_change).toFixed(1) : (isRed ? '2.4' : '0.9');
 
-                    return (
-                      <tr key={idx} className="hover:bg-blue-50/40 transition-colors">
-                        <td className="py-3.5">
-                          <div className="font-bold text-slate-800 text-sm">{h.symbol}</div>
-                          <div className="text-xs text-slate-400">{h.asset_class}</div>
-                        </td>
-                        <td className="py-3.5 text-xs font-semibold text-blue-700 bg-blue-50/60 px-2.5 py-1 rounded-md w-fit">{h.broker}</td>
-                        <td className="py-3.5 text-right text-sm text-slate-600 font-medium">{h.quantity}</td>
-                        <td className="py-3.5 text-right">
-                          <div className="font-bold text-slate-900 text-sm">₹{h.total_value.toLocaleString('en-IN')}</div>
-                          <div className={`text-xs font-bold flex items-center justify-end gap-0.5 ${isPositive ? 'text-emerald-600' : 'text-red-600'}`}>
-                            <span>{isPositive ? '↗' : '↘'}</span>
-                            <span>{isPositive ? '+' : '-'}{changeVal}%</span>
-                          </div>
-                          {/* Sparkline Graph Below Money */}
-                          <div className="flex justify-end mt-1">
-                            <svg width="48" height="14" viewBox="0 0 48 14" fill="none">
-                              <path
-                                d={isPositive
-                                  ? "M 0 12 C 10 12, 14 8, 22 7 C 30 6, 36 2, 48 1"
-                                  : "M 0 1 C 10 1, 14 5, 22 7 C 30 9, 36 12, 48 13"}
-                                stroke={isPositive ? "#16a34a" : "#dc2626"}
-                                strokeWidth="2"
-                              />
-                            </svg>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                  return (
+                    <tr key={idx} className="hover:bg-blue-50/40 transition-colors">
+                      <td className="py-3.5">
+                        <div className="font-bold text-slate-800 text-sm">{h.symbol}</div>
+                        <div className="text-xs text-slate-400">{h.asset_class}</div>
+                      </td>
+                      <td className="py-3.5 text-xs font-semibold text-blue-700 bg-blue-50/60 px-2.5 py-1 rounded-md w-fit">{h.broker}</td>
+                      <td className="py-3.5 text-right text-sm text-slate-600 font-medium">{h.quantity}</td>
+                      <td className="py-3.5 text-right">
+                        <div className="font-bold text-slate-900 text-sm">₹{h.total_value.toLocaleString('en-IN')}</div>
+                        <div className={`text-xs font-bold flex items-center justify-end gap-0.5 ${isPositive ? 'text-emerald-600' : 'text-red-600'}`}>
+                          <span>{isPositive ? '↗' : '↘'}</span>
+                          <span>{isPositive ? '+' : '-'}{changeVal}%</span>
+                        </div>
+                        {/* Sparkline Graph Below Money */}
+                        <div className="flex justify-end mt-1">
+                          <svg width="48" height="14" viewBox="0 0 48 14" fill="none">
+                            <path
+                              d={isPositive
+                                ? "M 0 12 C 10 12, 14 8, 22 7 C 30 6, 36 2, 48 1"
+                                : "M 0 1 C 10 1, 14 5, 22 7 C 30 9, 36 12, 48 13"}
+                              stroke={isPositive ? "#16a34a" : "#dc2626"}
+                              strokeWidth="2"
+                            />
+                          </svg>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

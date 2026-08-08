@@ -164,12 +164,12 @@ export default function GyaanScreen() {
         {/* HERO BANNER - SEBI NAVY BLUE */}
         <View style={styles.heroCard}>
           <View style={styles.heroTopRow}>
-            <View>
+            <View style={styles.heroTitleWrap}>
               <View style={styles.heroBadgeRow}>
                 <Text style={styles.heroBadgeText}>SEBI INVESTOR EDUCATION</Text>
                 <Text style={styles.heroBadgeSub}>• Dhan Gyaan</Text>
               </View>
-              <Text style={styles.heroTitle}>Financial Awareness Hub</Text>
+              <Text style={styles.heroTitle} numberOfLines={1} adjustsFontSizeToFit>Financial Awareness Hub</Text>
             </View>
             <View style={styles.coinsBadge}>
               <Coins color="#d97706" size={16} />
@@ -242,7 +242,7 @@ export default function GyaanScreen() {
                   </View>
                   <View style={styles.badgePill}>
                     <Award color="#d97706" size={16} />
-                    <Text style={styles.badgeText}>{activeBadge}</Text>
+                    <Text style={styles.badgeText} numberOfLines={1} ellipsizeMode="tail">{activeBadge}</Text>
                   </View>
                 </View>
               </View>
@@ -853,9 +853,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  heroTitleWrap: {
+    flex: 1,
+    marginRight: 10,
+  },
   heroBadgeRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexWrap: 'wrap',
     marginBottom: 4,
   },
   heroBadgeText: {
@@ -875,7 +880,7 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     color: '#ffffff',
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
   },
   heroSub: {
@@ -892,6 +897,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.25)',
+    flexShrink: 0,
   },
   coinsText: {
     color: '#fbbf24',
@@ -935,7 +941,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 40,
+    paddingBottom: 110,
   },
   userBanner: {
     backgroundColor: '#ffffff',
@@ -962,7 +968,10 @@ const styles = StyleSheet.create({
   },
   badgeStreakRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
     marginTop: 12,
+    alignItems: 'center',
   },
   streakPill: {
     flexDirection: 'row',
@@ -971,7 +980,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 12,
-    marginRight: 8,
   },
   streakText: {
     color: '#dc2626',
@@ -986,12 +994,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 12,
+    flexShrink: 1,
+    maxWidth: '100%',
   },
   badgeText: {
     color: '#d97706',
     fontSize: 12,
     fontWeight: 'bold',
     marginLeft: 4,
+    flexShrink: 1,
   },
   sectionHeader: {
     marginBottom: 12,

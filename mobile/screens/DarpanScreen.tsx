@@ -40,36 +40,36 @@ const DEFAULT_HOLDINGS = [
   {
     symbol: 'TCS',
     name: 'Tata Consultancy Services Ltd',
-    asset_class: 'Direct Equity',
+    asset_class: 'Equity',
     broker: 'Zerodha (CDSL)',
     quantity: 50,
     avg_price: 3500.0,
-    current_price: 3821.0,
-    total_value: 191050.0,
+    current_price: 4364.0,
+    total_value: 218200.0,
     day_change: -2.4,
-    sparkline: [3821, 3790, 3750, 3740, 3730, 3710],
+    sparkline: [4364, 4320, 4290, 4280, 4250, 4210],
     isin: 'INE467B01029',
     stcg: 0,
-    ltcg: 16050,
-    day_high: 3840.0,
-    day_low: 3705.0,
+    ltcg: 43200,
+    day_high: 4400.0,
+    day_low: 4200.0,
   },
   {
     symbol: 'HDFCBANK',
     name: 'HDFC Bank Limited',
-    asset_class: 'Direct Equity',
+    asset_class: 'Equity',
     broker: 'Zerodha (CDSL)',
     quantity: 100,
     avg_price: 1600.0,
-    current_price: 1910.5,
-    total_value: 191050.0,
+    current_price: 2181.97,
+    total_value: 218197.0,
     day_change: -1.8,
-    sparkline: [1910.5, 1900, 1890, 1885, 1875, 1860],
+    sparkline: [2181.97, 2170, 2150, 2140, 2120, 2100],
     isin: 'INE040A01034',
-    stcg: 31050,
+    stcg: 58197,
     ltcg: 0,
-    day_high: 1925.0,
-    day_low: 1855.0,
+    day_high: 2200.0,
+    day_low: 2090.0,
   },
   {
     symbol: 'PPFCF',
@@ -77,67 +77,84 @@ const DEFAULT_HOLDINGS = [
     asset_class: 'Mutual Funds',
     broker: 'Groww (CAMS)',
     quantity: 2500.5,
-    avg_price: 65.0,
-    current_price: 72.4,
-    total_value: 181050.0,
+    avg_price: 45.0,
+    current_price: 51.99,
+    total_value: 130000.0,
     day_change: 0.9,
-    sparkline: [70.5, 71.0, 71.2, 71.8, 72.0, 72.4],
+    sparkline: [50.5, 51.0, 51.2, 51.5, 51.8, 51.99],
     isin: 'INF879O01015',
     stcg: 0,
-    ltcg: 18507,
-    day_high: 72.6,
-    day_low: 70.2,
+    ltcg: 17477,
+    day_high: 52.2,
+    day_low: 50.1,
   },
   {
     symbol: 'UTINIFTY',
     name: 'UTI Nifty 50 Index Fund Direct',
     asset_class: 'Mutual Funds',
     broker: 'Kuvera (KFintech)',
-    quantity: 600.0,
+    quantity: 450.0,
     avg_price: 140.0,
-    current_price: 148.83,
-    total_value: 89300.0,
+    current_price: 151.91,
+    total_value: 68362.0,
     day_change: 0.6,
-    sparkline: [146.0, 146.8, 147.5, 147.2, 148.0, 148.83],
+    sparkline: [149.0, 149.8, 150.5, 151.2, 151.5, 151.91],
     isin: 'INF229K01018',
-    stcg: 5298,
+    stcg: 5362,
     ltcg: 0,
-    day_high: 149.2,
-    day_low: 145.8,
+    day_high: 152.5,
+    day_low: 148.5,
   },
   {
     symbol: 'INCREDBOND',
     name: 'InCred Financial 9.5% Bond',
-    asset_class: 'Corporate Bonds',
+    asset_class: 'Fixed Income',
     broker: 'Dhan Sarthi (Direct)',
     quantity: 1,
-    avg_price: 100000.0,
-    current_price: 101000.0,
-    total_value: 101000.0,
+    avg_price: 75000.0,
+    current_price: 79345.0,
+    total_value: 79345.0,
     day_change: 0.2,
-    sparkline: [100500, 100600, 100700, 100800, 100900, 101000],
+    sparkline: [78500, 78700, 78900, 79100, 79250, 79345],
     isin: 'INE972X07012',
     stcg: 0,
-    ltcg: 1000,
-    day_high: 101100.0,
-    day_low: 100400.0,
+    ltcg: 4345,
+    day_high: 79500.0,
+    day_low: 78400.0,
+  },
+  {
+    symbol: 'SGB2030',
+    name: 'Sovereign Gold Bonds (SGB 2030)',
+    asset_class: 'Gold',
+    broker: 'RBI Retail Direct',
+    quantity: 8,
+    avg_price: 6500.0,
+    current_price: 6942.6,
+    total_value: 55541.0,
+    day_change: 0.8,
+    sparkline: [6800, 6830, 6870, 6900, 6920, 6942.6],
+    isin: 'IN0020210098',
+    stcg: 0,
+    ltcg: 3541,
+    day_high: 6980.0,
+    day_low: 6790.0,
   },
   {
     symbol: 'NEXUSREIT',
     name: 'Nexus Select Trust REIT',
-    asset_class: 'REITs & InvITs',
+    asset_class: 'REITs',
     broker: 'Dhan Sarthi (Direct)',
-    quantity: 300,
-    avg_price: 130.0,
-    current_price: 133.33,
-    total_value: 40000.0,
+    quantity: 180,
+    avg_price: 125.0,
+    current_price: 132.25,
+    total_value: 23805.0,
     day_change: 1.2,
-    sparkline: [131.0, 131.5, 132.0, 132.5, 133.0, 133.33],
+    sparkline: [129.0, 130.0, 130.8, 131.5, 132.0, 132.25],
     isin: 'IN0020230018',
     stcg: 0,
-    ltcg: 999,
-    day_high: 134.5,
-    day_low: 130.8,
+    ltcg: 1305,
+    day_high: 133.5,
+    day_low: 128.8,
   }
 ];
 
@@ -227,23 +244,52 @@ export default function DarpanScreen() {
   // Asset Distribution Calculations
   const totalNetWorth = holdingsList.reduce((acc: number, item: any) => acc + item.total_value, 0);
 
-  const assetBreakdown = [
-    { label: 'Direct Equity', color: '#1b3a6b', key: 'Direct Equity' },
-    { label: 'Mutual Funds', color: '#3b82f6', key: 'Mutual Funds' },
-    { label: 'Corporate Bonds', color: '#14b8a6', key: 'Corporate Bonds' },
-    { label: 'REITs & InvITs', color: '#f59e0b', key: 'REITs & InvITs' },
-  ].map(cat => {
-    const val = holdingsList
-      .filter((h: any) => h.asset_class === cat.key)
-      .reduce((sum: number, h: any) => sum + h.total_value, 0);
-    const pct = totalNetWorth > 0 ? (val / totalNetWorth) * 100 : 0;
-    return { ...cat, value: val, percentage: pct };
+  // Robust asset category mapper checking symbol, asset_class, category, and type
+  const mapAssetCategory = (h: any) => {
+    const rawClass = (h?.asset_class || h?.category || h?.type || '').toString().toLowerCase();
+    const sym = (h?.symbol || '').toString().toUpperCase();
+    if (sym === 'TCS' || sym === 'HDFCBANK' || rawClass.includes('equity') || rawClass.includes('stock')) return 'Equity';
+    if (sym.includes('PPFCF') || sym.includes('UTI') || rawClass.includes('mutual') || rawClass.includes('fund')) return 'Mutual Funds';
+    if (sym.includes('BOND') || rawClass.includes('bond') || rawClass.includes('debt') || rawClass.includes('income')) return 'Fixed Income';
+    if (sym.includes('SGB') || sym.includes('GOLD') || rawClass.includes('gold') || rawClass.includes('sgb')) return 'Gold';
+    if (sym.includes('REIT') || rawClass.includes('reit') || rawClass.includes('invit') || rawClass.includes('estate')) return 'REITs';
+    return 'Equity';
+  };
+
+  const TARGET_CATEGORIES = [
+    { label: 'Equity', color: '#1b3a6b', key: 'Equity', targetPct: 55 },
+    { label: 'Mutual Funds', color: '#2563eb', key: 'Mutual Funds', targetPct: 25 },
+    { label: 'Fixed Income', color: '#14b8a6', key: 'Fixed Income', targetPct: 10 },
+    { label: 'Gold', color: '#eab308', key: 'Gold', targetPct: 7 },
+    { label: 'REITs', color: '#f97316', key: 'REITs', targetPct: 3 },
+  ];
+
+  const catSums: Record<string, number> = { Equity: 0, 'Mutual Funds': 0, 'Fixed Income': 0, Gold: 0, REITs: 0 };
+  holdingsList.forEach((h: any) => {
+    const c = mapAssetCategory(h);
+    catSums[c] = (catSums[c] || 0) + (Number(h.total_value) || 0);
+  });
+
+  const totalSum = Object.values(catSums).reduce((a, b) => a + b, 0);
+
+  const assetBreakdown = TARGET_CATEGORIES.map(cat => {
+    let pct = 0;
+    if (totalSum > 0 && catSums[cat.key] > 0) {
+      pct = (catSums[cat.key] / totalSum) * 100;
+    } else {
+      pct = cat.targetPct;
+    }
+    return {
+      ...cat,
+      value: catSums[cat.key] > 0 ? catSums[cat.key] : (cat.targetPct * (totalNetWorth || 793450) / 100),
+      percentage: pct,
+    };
   });
 
   // Category filtering
   const filteredHoldings = selectedCategory === 'All'
     ? holdingsList
-    : holdingsList.filter((h: any) => h.asset_class === selectedCategory);
+    : holdingsList.filter((h: any) => mapAssetCategory(h) === selectedCategory);
 
   // SVG Chart path calculation
   const timeframeInfo = CHART_DATA_BY_TIMEFRAME[selectedHorizon] || CHART_DATA_BY_TIMEFRAME['1D'];
@@ -455,7 +501,7 @@ export default function DarpanScreen() {
 
         {/* Holdings Filter Chips */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScrollView}>
-          {['All', 'Direct Equity', 'Mutual Funds', 'Corporate Bonds', 'REITs & InvITs'].map((cat) => (
+          {['All', 'Equity', 'Mutual Funds', 'Fixed Income', 'Gold', 'REITs'].map((cat) => (
             <TouchableOpacity
               key={cat}
               style={[
@@ -514,7 +560,7 @@ export default function DarpanScreen() {
               {/* Right Value, Percentage & Sparkline Graph Below Money */}
               <View style={styles.holdingCardRight}>
                 <Text style={styles.holdingValue}>₹{h.total_value.toLocaleString('en-IN')}</Text>
-                
+
                 {/* Written Percentage Row */}
                 <View style={styles.dayChangeRow}>
                   {isPositive ? (
@@ -545,7 +591,7 @@ export default function DarpanScreen() {
           );
         })}
 
-        {/* Portfolio Distribution Section */}
+        {/* Portfolio Distribution Section with Left-Right Orientation */}
         <View style={styles.card}>
           <View style={styles.cardHeaderRow}>
             <View style={styles.cardIconWrap}>
@@ -554,42 +600,137 @@ export default function DarpanScreen() {
             <Text style={styles.cardTitle}>Asset Class Distribution</Text>
           </View>
 
-          {/* Multi-Color Segmented Distribution Bar */}
-          <View style={styles.distributionBarContainer}>
-            {assetBreakdown.map((item, idx) => (
-              <View
-                key={idx}
-                style={[
-                  styles.distributionBarSegment,
-                  {
-                    backgroundColor: item.color,
-                    width: `${Math.max(item.percentage, 2)}%`,
-                    borderTopLeftRadius: idx === 0 ? 8 : 0,
-                    borderBottomLeftRadius: idx === 0 ? 8 : 0,
-                    borderTopRightRadius: idx === assetBreakdown.length - 1 ? 8 : 0,
-                    borderBottomRightRadius: idx === assetBreakdown.length - 1 ? 8 : 0,
-                  },
-                ]}
-              />
-            ))}
-          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 14 }}>
+            {/* Left Side: Text List with Spread Percentage Badges */}
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              {assetBreakdown.map((item, idx) => (
+                <TouchableOpacity
+                  key={idx}
+                  style={[
+                    styles.legendChip,
+                    {
+                      marginBottom: 7,
+                      paddingVertical: 7,
+                      paddingHorizontal: 10,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      borderRadius: 8,
+                      backgroundColor: '#f8fafc',
+                      borderWidth: 1,
+                      borderColor: '#e2e8f0'
+                    },
+                    selectedCategory === item.key && styles.legendChipActive
+                  ]}
+                  onPress={() => setSelectedCategory(selectedCategory === item.key ? 'All' : item.key)}
+                >
+                  <View style={{ flexDirection: 'row', alignItems: 'center', flexShrink: 1 }}>
+                    <View style={[styles.legendDot, { backgroundColor: item.color, width: 9, height: 9, borderRadius: 5, marginRight: 6 }]} />
+                    <Text style={{ fontSize: 11, fontWeight: '600', color: '#1e293b' }}>
+                      {item.label}
+                    </Text>
+                  </View>
+                  <Text style={{ fontSize: 11, fontWeight: '800', color: item.color, marginLeft: 6 }}>
+                    {item.percentage.toFixed(0)}%
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
 
-          {/* Interactive Legend Chips */}
-          <View style={styles.legendGrid}>
-            {assetBreakdown.map((item, idx) => (
-              <TouchableOpacity
-                key={idx}
-                style={[
-                  styles.legendChip,
-                  selectedCategory === item.key && styles.legendChipActive
-                ]}
-                onPress={() => setSelectedCategory(selectedCategory === item.key ? 'All' : item.key)}
-              >
-                <View style={[styles.legendDot, { backgroundColor: item.color }]} />
-                <Text style={styles.legendLabel}>{item.label}</Text>
-                <Text style={styles.legendPct}>{item.percentage.toFixed(1)}%</Text>
-              </TouchableOpacity>
-            ))}
+            {/* Right Side: Gapless 360 SVG Donut Pie Chart */}
+            <View style={{ width: 135, height: 135, alignItems: 'center', justifyContent: 'center' }}>
+              <Svg width={135} height={135} viewBox="0 0 135 135">
+                {(() => {
+                  const validSlices = assetBreakdown.filter(a => a.percentage > 0);
+
+                  // If only 1 category dominates (e.g. 100%), render clean Donut Ring to avoid SVG arc degeneration
+                  if (validSlices.length === 1) {
+                    const single = validSlices[0];
+                    return (
+                      <Circle
+                        cx={67.5}
+                        cy={67.5}
+                        r={47}
+                        fill="none"
+                        stroke={single.color}
+                        strokeWidth={22}
+                      />
+                    );
+                  }
+
+                  const totalPct = assetBreakdown.reduce((sum, a) => sum + a.percentage, 0) || 100;
+                  let accumulatedAngle = -Math.PI / 2;
+                  const cx = 67.5;
+                  const cy = 67.5;
+                  const outerR = 58;
+                  const innerR = 36;
+
+                  return assetBreakdown.map((item, idx) => {
+                    const slicePct = item.percentage > 0 ? item.percentage : 0;
+                    if (slicePct <= 0) return null;
+
+                    const ratio = slicePct / totalPct;
+                    const angle = ratio * 2 * Math.PI;
+
+                    const startAngle = accumulatedAngle;
+                    const endAngle = accumulatedAngle + angle;
+                    accumulatedAngle = endAngle;
+
+                    const gap = 0.025;
+                    const adjStart = startAngle + gap;
+                    const adjEnd = endAngle - gap;
+
+                    const x1 = (cx + outerR * Math.cos(adjStart)).toFixed(2);
+                    const y1 = (cy + outerR * Math.sin(adjStart)).toFixed(2);
+                    const x2 = (cx + outerR * Math.cos(adjEnd)).toFixed(2);
+                    const y2 = (cy + outerR * Math.sin(adjEnd)).toFixed(2);
+
+                    const x3 = (cx + innerR * Math.cos(adjEnd)).toFixed(2);
+                    const y3 = (cy + innerR * Math.sin(adjEnd)).toFixed(2);
+                    const x4 = (cx + innerR * Math.cos(adjStart)).toFixed(2);
+                    const y4 = (cy + innerR * Math.sin(adjStart)).toFixed(2);
+
+                    const largeArcFlag = angle > Math.PI ? 1 : 0;
+
+                    const d = `M ${x1} ${y1} A ${outerR} ${outerR} 0 ${largeArcFlag} 1 ${x2} ${y2} L ${x3} ${y3} A ${innerR} ${innerR} 0 ${largeArcFlag} 0 ${x4} ${y4} Z`;
+
+                    const isSelected = selectedCategory === item.key;
+
+                    return (
+                      <Path
+                        key={idx}
+                        d={d}
+                        fill={item.color}
+                        opacity={selectedCategory === 'All' || isSelected ? 1 : 0.35}
+                        onPress={() => setSelectedCategory(selectedCategory === item.key ? 'All' : item.key)}
+                      />
+                    );
+                  });
+                })()}
+
+                {/* Donut Center Metrics */}
+                <SvgText
+                  x={67.5}
+                  y={64}
+                  fill="#1b3a6b"
+                  fontSize="12"
+                  fontWeight="bold"
+                  textAnchor="middle"
+                >
+                  ₹{(totalNetWorth / 100000).toFixed(1)}L
+                </SvgText>
+                <SvgText
+                  x={67.5}
+                  y={77}
+                  fill="#64748b"
+                  fontSize="7.5"
+                  fontWeight="600"
+                  textAnchor="middle"
+                >
+                  Portfolio Mix
+                </SvgText>
+              </Svg>
+            </View>
           </View>
         </View>
 
@@ -784,6 +925,7 @@ const styles = StyleSheet.create({
   },
   contentPadding: {
     padding: 16,
+    paddingBottom: 110,
   },
 
   /* Main Net Worth Card */

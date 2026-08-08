@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
   heroTitle: { color: '#ffffff', fontSize: 22, fontWeight: 'bold' },
   heroSub: { color: '#e2e8f0', fontSize: 12, marginTop: 4 },
   scrollBody: { flex: 1 },
-  scrollContent: { padding: 16, paddingBottom: 40 },
+  scrollContent: { padding: 16, paddingBottom: 110 },
   profileCard: {
     backgroundColor: '#ffffff',
     padding: 16,
