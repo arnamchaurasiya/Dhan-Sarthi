@@ -20,13 +20,145 @@ import {
   CheckCircle2,
   Clock,
   X,
+  Play,
+  PlayCircle,
+  GraduationCap,
+  PieChart,
+  BarChart3,
+  FileText,
+  ChevronDown,
+  ArrowLeft,
+  Bookmark,
+  Share2,
+  ThumbsUp,
+  AlertTriangle,
+  Users,
 } from "lucide-react";
 
-const API_BASE = "https://dhan-sarthi.onrender.com";
+const TOPICS_DATA: Record<string, any> = {
+  'What is REIT?': {
+    id: 'reit',
+    title: 'What is REIT?',
+    readTime: '5 min read',
+    subtitle: 'Earn from Real Estate, without buying it.',
+    nextTopicKey: 'What is InvIT?',
+    nextTopicTitle: 'Next: What is InvIT?',
+    takeaways: [
+      'REIT stands for Real Estate Investment Trust.',
+      'It lets you invest in income-generating real estate.',
+      'You earn rental income + potential capital appreciation.',
+      'SEBI regulated and more transparent.',
+      'Good for long-term passive income.',
+    ],
+    steps: [
+      { label: 'REIT owns income-generating properties', iconType: 'building' },
+      { label: 'Earns rental income', iconType: 'coin' },
+      { label: 'Distributes 90%+ income to investors', iconType: 'people' },
+      { label: 'Unit price may appreciate', iconType: 'chart' },
+    ],
+    example: {
+      name: 'Mindspace Business Parks REIT',
+      desc: 'Mindspace Business Parks REIT owns offices in India\'s top cities and earns rent from big companies.',
+      linkText: 'Explore this REIT >',
+    },
+    suitability: [
+      'You want passive income',
+      'You have medium to long term horizon',
+      'You want diversification beyond stocks',
+      'You understand the risks involved',
+    ],
+    risks: [
+      'Market risk: Unit prices can go down',
+      'Interest rate risk: Rising rates can affect returns',
+      'Property vacancy & rental risk',
+    ],
+  },
+  'What is InvIT?': {
+    id: 'invit',
+    title: 'What is InvIT?',
+    readTime: '5 min read',
+    subtitle: 'Invest in highways, power transmission & infra assets.',
+    nextTopicKey: 'Corporate Bonds 101',
+    nextTopicTitle: 'Next: Corporate Bonds 101',
+    takeaways: [
+      'InvIT stands for Infrastructure Investment Trust.',
+      'It lets individual investors own toll roads, transmission lines & solar parks.',
+      'Quarterly cash distributions paid directly to unit holders.',
+      'SEBI regulated infrastructure asset class.',
+      'Higher yield potential than traditional fixed deposits.',
+    ],
+    steps: [
+      { label: 'InvIT acquires operational toll roads/power grids', iconType: 'building' },
+      { label: 'Collects toll & transmission fees', iconType: 'coin' },
+      { label: 'Distributes 90%+ cash flows as yield', iconType: 'people' },
+      { label: 'Long-term stable cash generation', iconType: 'chart' },
+    ],
+    example: {
+      name: 'PowerGrid Infrastructure Investment Trust',
+      desc: 'PowerGrid InvIT owns power transmission assets across India and distributes steady quarterly returns.',
+      linkText: 'Explore this InvIT >',
+    },
+    suitability: [
+      'You seek steady cash flow distributions',
+      'You want exposure to national infrastructure projects',
+      'You have a 3 to 7 year investment horizon',
+      'You want high-yield passive income',
+    ],
+    risks: [
+      'Toll traffic volume fluctuations',
+      'Regulatory tariff revisions by power authorities',
+      'Interest rate sensitivity',
+    ],
+  },
+  'Corporate Bonds 101': {
+    id: 'bonds',
+    title: 'Corporate Bonds 101',
+    readTime: '5 min read',
+    subtitle: 'Earn fixed interest payouts from India\'s top corporates.',
+    nextTopicKey: 'What is REIT?',
+    nextTopicTitle: 'Next: What is REIT?',
+    takeaways: [
+      'Bonds are debt instruments issued by companies to borrow capital.',
+      'Investors receive fixed periodic coupon (interest) payments.',
+      'Rated by CRISIL/ICRA (e.g. AAA, AA+) for credit safety.',
+      'Provides capital protection & predictable returns.',
+      'Acts as a defensive cushion against equity volatility.',
+    ],
+    steps: [
+      { label: 'Company issues bond with fixed coupon rate', iconType: 'building' },
+      { label: 'Investor buys bond units', iconType: 'coin' },
+      { label: 'Receives semi-annual/annual interest', iconType: 'people' },
+      { label: 'Principal returned at maturity', iconType: 'chart' },
+    ],
+    example: {
+      name: 'InCred Financial 9.5% Senior Bond',
+      desc: 'InCred Financial offers 9.5% per annum fixed yield paid monthly with SEBI depositories verification.',
+      linkText: 'Explore Corporate Bonds >',
+    },
+    suitability: [
+      'You want regular fixed interest payouts',
+      'You want lower volatility than direct stocks',
+      'You want to balance an equity-heavy portfolio',
+      'You understand credit ratings (AAA vs BBB)',
+    ],
+    risks: [
+      'Credit/Default risk if issuer defaults',
+      'Liquidity risk before maturity date',
+      'Inflation eroding real returns',
+    ],
+  },
+};
 
 export default function Gyaan() {
   // Navigation Tabs
   const [activeTab, setActiveTab] = useState<"dashboard" | "tutor" | "path" | "simulators" | "readiness">("dashboard");
+
+  // Topic Lesson Modal State
+  const [selectedTopicKey, setSelectedTopicKey] = useState<string | null>(null);
+  const [topicLang, setTopicLang] = useState<string>("हिंदी");
+  const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
+  const [helpfulCount, setHelpfulCount] = useState<number>(128);
+  const [isHelpfulClicked, setIsHelpfulClicked] = useState<boolean>(false);
 
   // User Gamification State
   const [streakDays, setStreakDays] = useState(7);
@@ -205,144 +337,262 @@ export default function Gyaan() {
         {/* TAB 1: DASHBOARD / HOME */}
         {/* ======================================================== */}
         {activeTab === "dashboard" && (
-          <div className="space-y-8 animate-in fade-in duration-300">
-            {/* USER GREETING & STREAK BANNER */}
-            <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div className="space-y-6 animate-in fade-in duration-300">
+            {/* 1. TOP HERO BANNER */}
+            <div className="bg-[#eef2ff] border border-[#e0e7ff] rounded-3xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-sm">
               <div>
-                <h2 className="text-2xl font-bold text-[#1B3A6B]">👋 Hi Arnam,</h2>
-                <p className="text-slate-500 text-sm mt-1">Based on your portfolio, learn what matters for you.</p>
+                <h2 className="text-3xl font-extrabold text-[#1e1b4b] leading-tight">
+                  Gyaan se hi<br />nivesh ka gyaan!
+                </h2>
+                <p className="text-slate-600 text-sm font-medium mt-2 leading-relaxed">
+                  Learn in 5 mins,<br />Invest for life.
+                </p>
               </div>
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="flex items-center space-x-2 bg-rose-50 border border-rose-200 px-3.5 py-2 rounded-xl text-rose-700 text-xs font-bold">
-                  <Flame size={16} fill="currentColor" className="text-rose-500" />
-                  <span>{streakDays} Day Learning Streak</span>
-                </div>
-                <div className="flex items-center space-x-2 bg-amber-50 border border-amber-200 px-3.5 py-2 rounded-xl text-amber-800 text-xs font-bold">
-                  <Award size={16} className="text-amber-600" />
-                  <span>{activeBadge}</span>
-                </div>
+              <div className="shrink-0 self-center">
+                <svg width="120" height="110" viewBox="0 0 105 95" fill="none">
+                  <circle cx="52" cy="50" r="40" fill="#dbeafe" opacity="0.6" />
+                  <circle cx="82" cy="18" r="9" fill="#fef08a" />
+                  <path d="M 82 9 A 6 6 0 0 1 82 22 L 82 24 M 79 24 L 85 24" stroke="#d97706" strokeWidth="2" strokeLinecap="round" />
+                  <circle cx="50" cy="34" r="14" fill="#fed7aa" />
+                  <path d="M 36 65 C 36 48, 64 48, 64 65 Z" fill="#1e3a8a" />
+                  <path d="M 28 58 L 50 50 L 72 58 L 72 74 L 50 66 L 28 74 Z" fill="#3b82f6" />
+                  <path d="M 50 50 L 50 66" stroke="#1d4ed8" strokeWidth="1.5" />
+                </svg>
               </div>
             </div>
 
-            {/* SECTION 1: CONTINUE LEARNING CARD */}
+            {/* 2. YOUR LEARNING PROGRESS */}
             <div>
-              <h2 className="text-slate-800 font-bold text-xl mb-4">Section 1: "Continue Learning"</h2>
-              <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
-                <div className="flex justify-between items-center mb-3">
-                  <div className="flex items-center space-x-2 bg-blue-50 text-[#1B3A6B] px-3 py-1 rounded-lg text-xs font-bold border border-blue-100">
-                    <BookOpen size={14} />
-                    <span>Continue Learning</span>
-                  </div>
-                  <div className="flex items-center space-x-1.5 text-slate-500 text-xs font-medium">
-                    <Clock size={14} />
-                    <span>⏱ 3 mins remaining</span>
-                  </div>
-                </div>
-
-                <h3 className="text-2xl font-bold text-slate-900 mb-1">Understanding REITs</h3>
-                <p className="text-slate-500 text-xs mb-4">Real Estate Investment Trusts & Commercial Yields</p>
-
-                <div className="flex items-center space-x-3 mb-5">
-                  <div className="flex-1 bg-slate-100 h-2.5 rounded-full overflow-hidden border border-slate-200">
-                    <div className="bg-[#1B3A6B] h-full rounded-full" style={{ width: "70%" }} />
-                  </div>
-                  <span className="text-[#1B3A6B] text-xs font-bold">70%</span>
-                </div>
-
-                <button
-                  onClick={() => setActiveTab("tutor")}
-                  className="w-full bg-[#1B3A6B] hover:bg-[#254b85] text-white font-bold text-sm py-2.5 rounded-xl transition-colors flex items-center justify-center space-x-2 shadow-sm"
-                >
-                  <span>Resume →</span>
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-slate-900 font-bold text-lg">Your Learning Progress</h3>
+                <button onClick={() => setActiveTab("path")} className="text-blue-600 font-bold text-xs hover:underline">
+                  View all
                 </button>
               </div>
-            </div>
 
-            {/* SECTION 5: EXPLAIN MY PORTFOLIO FEATURE */}
-            <div>
-              <div className="flex justify-between items-center mb-4">
-                <div>
-                  <h2 className="text-slate-800 font-bold text-xl">5. "Explain My Portfolio" Feature ⭐</h2>
-                  <p className="text-slate-500 text-xs">Connects Dhan Darpan + Dhan Gyaan</p>
+              <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm">
+                <div className="grid grid-cols-3 divide-x divide-slate-100 text-center">
+                  <div className="px-2">
+                    <span className="text-2xl font-extrabold text-blue-700 block">7</span>
+                    <span className="text-slate-500 text-xs font-medium mt-1 block">Topics Learned</span>
+                  </div>
+                  <div className="px-2">
+                    <div className="flex items-center justify-center space-x-1.5">
+                      <Coins className="text-amber-500 fill-amber-200" size={20} />
+                      <span className="text-2xl font-extrabold text-blue-700">250</span>
+                    </div>
+                    <span className="text-slate-500 text-xs font-medium mt-1 block">Gyaan Points</span>
+                  </div>
+                  <div className="px-2">
+                    <div className="flex items-center justify-center space-x-1.5">
+                      <Flame className="text-orange-500 fill-orange-500" size={20} />
+                      <span className="text-2xl font-extrabold text-blue-700">{streakDays}</span>
+                    </div>
+                    <span className="text-slate-500 text-xs font-medium mt-1 block">Day Streak</span>
+                  </div>
+                </div>
+
+                <div className="mt-5">
+                  <div className="bg-slate-100 h-2 rounded-full overflow-hidden">
+                    <div className="bg-blue-700 h-full rounded-full" style={{ width: "70%" }} />
+                  </div>
+                  <div className="flex justify-between items-center mt-2.5 text-xs">
+                    <span className="text-slate-500 font-medium">Keep learning! 3 more topics to unlock next badge.</span>
+                    <span className="font-extrabold text-slate-800">70%</span>
+                  </div>
                 </div>
               </div>
+            </div>
 
-              <div className="bg-white border border-rose-200 rounded-2xl p-6 shadow-sm space-y-5">
-                <div className="flex justify-between items-center pb-3 border-b border-slate-100">
-                  <h3 className="text-[#1B3A6B] font-bold text-base">Your Portfolio Summary</h3>
-                  <div className="flex items-center space-x-1.5 bg-rose-50 text-rose-700 px-3 py-1 rounded-lg text-xs font-bold border border-rose-200">
-                    <ShieldAlert size={14} />
-                    <span>75% Equity Exposure ⚠️</span>
-                  </div>
-                </div>
-
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between text-slate-700 py-1 border-b border-slate-100">
-                    <span>Reliance Industries</span>
-                    <span className="font-semibold text-slate-900">₹1,20,000 (Equity)</span>
-                  </div>
-                  <div className="flex justify-between text-slate-700 py-1 border-b border-slate-100">
-                    <span>HDFC Mutual Fund</span>
-                    <span className="font-semibold text-slate-900">₹80,000 (Equity)</span>
-                  </div>
-                  <div className="flex justify-between text-slate-500 py-1">
-                    <span>Bonds & Debt Allocation</span>
-                    <span className="text-rose-600 font-bold">No Bonds (0%)</span>
-                  </div>
-                </div>
-
-                <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-start space-x-3">
-                  <Sparkles className="text-[#1B3A6B] shrink-0 mt-0.5" size={18} />
-                  <p className="text-slate-700 text-xs leading-relaxed">
-                    <strong>AI Portfolio Analysis:</strong> Your portfolio has high concentration risk in Equities without bond cushions. What you should learn right now:
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <div onClick={() => setActiveTab("path")} className="bg-slate-50 p-3 rounded-xl border border-slate-200 flex items-center space-x-2 text-xs font-bold text-slate-800 cursor-pointer hover:border-blue-300 transition-colors">
-                    <BookOpen size={16} className="text-[#1B3A6B]" />
-                    <span>📚 Why diversification matters</span>
-                  </div>
-                  <div onClick={() => setActiveTab("simulators")} className="bg-slate-50 p-3 rounded-xl border border-slate-200 flex items-center space-x-2 text-xs font-bold text-slate-800 cursor-pointer hover:border-emerald-300 transition-colors">
-                    <Landmark size={16} className="text-emerald-600" />
-                    <span>📚 Introduction to Bonds</span>
-                  </div>
-                  <div onClick={() => setActiveTab("readiness")} className="bg-slate-50 p-3 rounded-xl border border-slate-200 flex items-center space-x-2 text-xs font-bold text-slate-800 cursor-pointer hover:border-amber-300 transition-colors">
-                    <ShieldCheck size={16} className="text-amber-600" />
-                    <span>📚 Understanding Risk</span>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => setActiveTab("path")}
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm py-2.5 rounded-xl transition-colors shadow-sm"
-                >
-                  Start Learning →
+            {/* 3. QUICK LEARN (5 mins or less) */}
+            <div>
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-slate-900 font-bold text-lg">Quick Learn (5 mins or less)</h3>
+                <button onClick={() => setActiveTab("tutor")} className="text-blue-600 font-bold text-xs hover:underline">
+                  See all
                 </button>
               </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {/* Card 1 */}
+                <div
+                  onClick={() => setSelectedTopicKey("What is REIT?")}
+                  className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
+                >
+                  <div className="bg-emerald-50 h-28 rounded-xl flex items-center justify-center relative mb-3">
+                    <span className="absolute top-2 left-2 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
+                      Popular
+                    </span>
+                    <Building2 className="text-emerald-600 opacity-80" size={42} />
+                  </div>
+                  <h4 className="font-bold text-slate-900 text-sm mb-2">What is REIT?</h4>
+                  <div className="flex justify-between items-center text-xs text-slate-500 font-medium">
+                    <span>5 min read</span>
+                    <PlayCircle className="text-blue-600" size={20} />
+                  </div>
+                </div>
+
+                {/* Card 2 */}
+                <div
+                  onClick={() => setSelectedTopicKey("What is InvIT?")}
+                  className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
+                >
+                  <div className="bg-purple-50 h-28 rounded-xl flex items-center justify-center relative mb-3">
+                    <span className="absolute top-2 left-2 bg-purple-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
+                      New
+                    </span>
+                    <Landmark className="text-purple-600 opacity-80" size={42} />
+                  </div>
+                  <h4 className="font-bold text-slate-900 text-sm mb-2">What is InvIT?</h4>
+                  <div className="flex justify-between items-center text-xs text-slate-500 font-medium">
+                    <span>5 min read</span>
+                    <PlayCircle className="text-blue-600" size={20} />
+                  </div>
+                </div>
+
+                {/* Card 3 */}
+                <div
+                  onClick={() => setSelectedTopicKey("Corporate Bonds 101")}
+                  className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
+                >
+                  <div className="bg-amber-50 h-28 rounded-xl flex items-center justify-center relative mb-3">
+                    <Award className="text-amber-600 opacity-80" size={42} />
+                  </div>
+                  <h4 className="font-bold text-slate-900 text-sm mb-2">Corporate Bonds 101</h4>
+                  <div className="flex justify-between items-center text-xs text-slate-500 font-medium">
+                    <span>5 min read</span>
+                    <PlayCircle className="text-blue-600" size={20} />
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* SECTION 4: LEARNING CATEGORIES */}
+            {/* 4. CONTINUE LEARNING */}
             <div>
-              <h2 className="text-slate-800 font-bold text-xl mb-4">4. Learning Categories</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {[
-                  { title: "📈 Stock Market", sub: "Beginner → Advanced", color: "bg-blue-50 text-blue-900 border-blue-200" },
-                  { title: "🏢 REITs & InvITs", sub: "Passive income explained", color: "bg-purple-50 text-purple-900 border-purple-200" },
-                  { title: "💰 Mutual Funds", sub: "SIP, NAV, Expense Ratio", color: "bg-emerald-50 text-emerald-900 border-emerald-200" },
-                  { title: "🏦 Bonds", sub: "Fixed income investing", color: "bg-amber-50 text-amber-900 border-amber-200" },
-                  { title: "🛡 Investor Safety", sub: "Frauds & scams", color: "bg-rose-50 text-rose-900 border-rose-200" },
-                  { title: "📑 Tax & ITR", sub: "Capital gains explained", color: "bg-cyan-50 text-cyan-900 border-cyan-200" },
-                ].map((cat, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => setActiveTab("tutor")}
-                    className={`bg-white border ${cat.color} rounded-2xl p-4 shadow-sm hover:shadow-md transition-all cursor-pointer`}
-                  >
-                    <h3 className="font-bold text-slate-900 text-base">{cat.title}</h3>
-                    <p className="text-xs text-slate-500 mt-1">{cat.sub}</p>
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-slate-900 font-bold text-lg">Continue Learning</h3>
+              </div>
+
+              <div
+                onClick={() => setActiveTab("tutor")}
+                className="bg-[#ecfdf5] border border-[#a7f3d0] rounded-2xl p-4 shadow-sm hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-4"
+              >
+                <div className="w-14 h-14 bg-blue-300 rounded-xl flex-shrink-0 flex items-center justify-center overflow-hidden">
+                  <svg width="56" height="56" viewBox="0 0 48 48" fill="none">
+                    <rect width="48" height="48" rx="10" fill="#93c5fd" />
+                    <path d="M 8 40 L 24 16 L 40 40 Z" fill="#1e40af" />
+                    <path d="M 18 40 L 30 24 L 42 40 Z" fill="#3b82f6" opacity="0.7" />
+                    <path d="M 24 16 L 24 10 L 30 13 Z" fill="#ef4444" />
+                  </svg>
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-bold text-[#064e3b] text-sm truncate">Risk vs Return: Samjho pehle, nivesh karo phir</h4>
+                  <p className="text-[#047857] text-xs mt-0.5 font-medium">Part 2 of 5  •  3 min left</p>
+                  <div className="flex items-center space-x-3 mt-2">
+                    <div className="flex-1 bg-slate-300 h-1.5 rounded-full overflow-hidden">
+                      <div className="bg-emerald-600 h-full rounded-full" style={{ width: "60%" }} />
+                    </div>
+                    <span className="text-[#047857] text-xs font-extrabold">60%</span>
                   </div>
-                ))}
+                </div>
+
+                <div className="w-10 h-10 rounded-full bg-[#065f46] flex items-center justify-center flex-shrink-0 text-white shadow-sm">
+                  <Play size={16} fill="currentColor" className="ml-0.5" />
+                </div>
+              </div>
+            </div>
+
+            {/* 5. LEARN BY CATEGORY */}
+            <div>
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-slate-900 font-bold text-lg">Learn by Category</h3>
+                <button onClick={() => setActiveTab("path")} className="text-blue-600 font-bold text-xs hover:underline">
+                  See all
+                </button>
+              </div>
+
+              <div className="grid grid-cols-5 gap-3 text-center">
+                <div onClick={() => setActiveTab("tutor")} className="cursor-pointer group">
+                  <div className="w-14 h-14 mx-auto rounded-2xl bg-blue-50 flex items-center justify-center text-blue-700 mb-1.5 group-hover:scale-105 transition-transform">
+                    <GraduationCap size={28} />
+                  </div>
+                  <span className="text-xs font-semibold text-slate-800">Basics</span>
+                </div>
+
+                <div onClick={() => setActiveTab("tutor")} className="cursor-pointer group">
+                  <div className="w-14 h-14 mx-auto rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 mb-1.5 group-hover:scale-105 transition-transform">
+                    <BarChart3 size={28} />
+                  </div>
+                  <span className="text-xs font-semibold text-slate-800">Equity</span>
+                </div>
+
+                <div onClick={() => setActiveTab("tutor")} className="cursor-pointer group">
+                  <div className="w-14 h-14 mx-auto rounded-2xl bg-purple-50 flex items-center justify-center text-purple-700 mb-1.5 group-hover:scale-105 transition-transform">
+                    <PieChart size={28} />
+                  </div>
+                  <span className="text-xs font-semibold text-slate-800">Mutual Funds</span>
+                </div>
+
+                <div onClick={() => setActiveTab("tutor")} className="cursor-pointer group">
+                  <div className="w-14 h-14 mx-auto rounded-2xl bg-sky-50 flex items-center justify-center text-sky-600 mb-1.5 group-hover:scale-105 transition-transform">
+                    <Building2 size={28} />
+                  </div>
+                  <span className="text-xs font-semibold text-slate-800">REITs & InvITs</span>
+                </div>
+
+                <div onClick={() => setActiveTab("tutor")} className="cursor-pointer group">
+                  <div className="w-14 h-14 mx-auto rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 mb-1.5 group-hover:scale-105 transition-transform">
+                    <Award size={28} />
+                  </div>
+                  <span className="text-xs font-semibold text-slate-800">Bonds</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 6. BEFORE YOU INVEST */}
+            <div
+              onClick={() => setActiveTab("readiness")}
+              className="bg-[#fffbe6] border border-[#fde68a] rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-4"
+            >
+              <div className="w-11 h-11 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 flex-shrink-0">
+                <ShieldCheck size={26} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="font-extrabold text-[#78350f] text-base">Before You Invest</h4>
+                <p className="text-[#92400e] text-xs mt-0.5 font-medium leading-normal">
+                  Complete mandatory lessons before investing in new products.
+                </p>
+              </div>
+              <button className="bg-white border border-amber-500 text-amber-800 hover:bg-amber-50 text-xs font-bold px-4 py-2 rounded-xl transition-colors shrink-0 shadow-xs">
+                Explore Now
+              </button>
+            </div>
+
+            {/* 7. FROM SEBI */}
+            <div>
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-slate-900 font-bold text-lg">From SEBI</h3>
+                <button onClick={() => setActiveTab("readiness")} className="text-blue-600 font-bold text-xs hover:underline">
+                  See all
+                </button>
+              </div>
+
+              <div
+                onClick={() => setActiveTab("readiness")}
+                className="bg-[#f8fafc] border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-4"
+              >
+                <div className="w-12 h-12 rounded-xl bg-sky-100 flex items-center justify-center text-sky-600 flex-shrink-0">
+                  <FileText size={26} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-bold text-slate-900 text-sm">Latest SEBI Circular Explained</h4>
+                  <p className="text-slate-500 text-xs mt-0.5">SEBI (LODR) Amendment Simplified</p>
+                  <p className="text-slate-400 text-[11px] mt-1">4 min read  •  Hindi</p>
+                </div>
+                <div className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 flex-shrink-0">
+                  <ChevronDown size={16} />
+                </div>
               </div>
             </div>
           </div>
@@ -756,8 +1006,220 @@ export default function Gyaan() {
               </div>
             )}
           </div>
-        </div>
-      )}
+        {/* TOPIC LESSON DETAIL MODAL FOR WEB */}
+        {selectedTopicKey && (
+          <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex justify-center items-center p-4 overflow-y-auto">
+            <div className="bg-white rounded-3xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+              {(() => {
+                const topic = TOPICS_DATA[selectedTopicKey] || TOPICS_DATA["What is REIT?"];
+                return (
+                  <>
+                    {/* Nav Header */}
+                    <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-white sticky top-0 z-10">
+                      <button
+                        onClick={() => setSelectedTopicKey(null)}
+                        className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+                      >
+                        <ArrowLeft size={20} className="text-slate-800" />
+                      </button>
+                      <div className="flex items-center space-x-3">
+                        <button
+                          onClick={() => setIsBookmarked(!isBookmarked)}
+                          className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+                        >
+                          <Bookmark
+                            size={20}
+                            className={isBookmarked ? "text-blue-600 fill-blue-600" : "text-slate-700"}
+                          />
+                        </button>
+                        <button className="p-2 hover:bg-slate-100 rounded-full transition-colors">
+                          <Share2 size={20} className="text-slate-700" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Scroll Content */}
+                    <div className="p-6 overflow-y-auto space-y-6">
+                      {/* Header */}
+                      <div>
+                        <div className="flex items-center space-x-3">
+                          <h2 className="text-2xl font-extrabold text-slate-900">{topic.title}</h2>
+                          <span className="bg-emerald-50 text-emerald-700 text-xs font-semibold px-2.5 py-1 rounded-lg">
+                            {topic.readTime}
+                          </span>
+                        </div>
+                        <p className="text-slate-600 text-sm font-medium mt-1">{topic.subtitle}</p>
+                      </div>
+
+                      {/* Language Selector */}
+                      <div className="flex items-center space-x-2 overflow-x-auto pb-1 no-scrollbar">
+                        {["English", "हिंदी", "मराठी", "தமிழ்", "বাংলা", "More ∨"].map((lang) => (
+                          <button
+                            key={lang}
+                            onClick={() => setTopicLang(lang)}
+                            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-colors shrink-0 ${
+                              topicLang === lang
+                                ? "bg-[#1b3a6b] text-white"
+                                : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
+                            }`}
+                          >
+                            {lang}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Video Banner */}
+                      <div className="relative rounded-2xl overflow-hidden bg-blue-100 h-44 flex items-center justify-center">
+                        <svg className="w-full h-full" viewBox="0 0 340 160" preserveAspectRatio="none">
+                          <rect width="340" height="160" fill="#bfdbfe" />
+                          <path d="M 20 160 L 20 80 L 50 80 L 50 160 Z" fill="#93c5fd" />
+                          <path d="M 60 160 L 60 50 L 100 50 L 100 160 Z" fill="#3b82f6" />
+                          <path d="M 110 160 L 110 90 L 140 90 L 140 160 Z" fill="#60a5fa" />
+                          <path d="M 150 160 L 150 40 L 190 40 L 190 160 Z" fill="#1d4ed8" />
+                          <path d="M 200 160 L 200 70 L 240 70 L 240 160 Z" fill="#2563eb" />
+                          <path d="M 250 160 L 250 85 L 290 85 L 290 160 Z" fill="#93c5fd" />
+                          <path d="M 0 145 C 100 135, 240 155, 340 140 L 340 160 L 0 160 Z" fill="#15803d" opacity="0.7" />
+                        </svg>
+                        <div className="absolute inset-0 bg-slate-900/20 flex items-center justify-center">
+                          <div className="w-14 h-14 rounded-full bg-white/90 shadow-lg flex items-center justify-center text-slate-800 hover:scale-105 transition-transform cursor-pointer">
+                            <Play size={24} fill="currentColor" className="ml-1" />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Key Takeaways */}
+                      <div>
+                        <h3 className="font-extrabold text-slate-900 text-base mb-3">Key Takeaways</h3>
+                        <div className="bg-[#f0f9ff] border border-[#bae6fd] rounded-2xl p-5 space-y-3">
+                          {topic.takeaways.map((item: string, idx: number) => (
+                            <div key={idx} className="flex items-start space-x-3">
+                              <CheckCircle2 className="text-blue-600 shrink-0 mt-0.5" size={18} />
+                              <span className="text-slate-800 text-xs font-medium leading-relaxed">{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* How it Works */}
+                      <div>
+                        <h3 className="font-extrabold text-slate-900 text-base mb-3">
+                          How {topic.title.replace("What is ", "")}s Work?
+                        </h3>
+                        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex justify-between items-start gap-2">
+                          {topic.steps.map((step: any, idx: number) => (
+                            <div key={idx} className="flex items-center flex-1">
+                              <div className="flex flex-col items-center text-center w-full">
+                                <div className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center mb-2 shadow-xs">
+                                  {step.iconType === "building" && <Building2 className="text-blue-700" size={18} />}
+                                  {step.iconType === "coin" && <Coins className="text-amber-600 fill-amber-200" size={18} />}
+                                  {step.iconType === "people" && <Users className="text-indigo-700" size={18} />}
+                                  {step.iconType === "chart" && <BarChart3 className="text-emerald-600" size={18} />}
+                                </div>
+                                <span className="text-[10px] font-semibold text-slate-700 leading-tight">{step.label}</span>
+                              </div>
+                              {idx < topic.steps.length - 1 && (
+                                <span className="text-slate-400 font-bold text-sm mx-1">→</span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Real World Example */}
+                      <div className="bg-[#ecfdf5] border border-[#a7f3d0] rounded-2xl p-4">
+                        <span className="text-emerald-800 font-extrabold text-xs">Example</span>
+                        <div className="flex items-center space-x-3 mt-2">
+                          <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-sky-600 shrink-0 shadow-xs">
+                            <Building2 size={24} />
+                          </div>
+                          <div>
+                            <p className="text-[#047857] text-xs font-medium leading-relaxed">{topic.example.desc}</p>
+                            <button className="text-[#047857] font-extrabold text-xs mt-1 hover:underline">
+                              {topic.example.linkText}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Is it Right for You */}
+                      <div>
+                        <h3 className="font-extrabold text-slate-900 text-base mb-1">Is it Right for You?</h3>
+                        <p className="text-slate-500 text-xs mb-3">{topic.title.replace("What is ", "")}s may be suitable if:</p>
+
+                        <div className="flex justify-between items-center gap-4">
+                          <div className="space-y-2.5 flex-1">
+                            {topic.suitability.map((item: string, idx: number) => (
+                              <div key={idx} className="flex items-center space-x-2.5">
+                                <CheckCircle2 className="text-emerald-500 shrink-0" size={18} />
+                                <span className="text-slate-800 text-xs font-semibold">{item}</span>
+                              </div>
+                            ))}
+                          </div>
+
+                          <div className="shrink-0 flex items-center justify-center">
+                            <svg width="75" height="75" viewBox="0 0 80 80">
+                              <circle cx="40" cy="40" r="36" fill="#dbeafe" />
+                              <circle cx="40" cy="40" r="28" fill="#ffffff" stroke="#1d4ed8" strokeWidth="3" />
+                              <circle cx="40" cy="40" r="20" fill="#dbeafe" />
+                              <circle cx="40" cy="40" r="12" fill="#ffffff" stroke="#1d4ed8" strokeWidth="3" />
+                              <circle cx="40" cy="40" r="5" fill="#1e3a8a" />
+                              <path d="M 62 18 L 42 38" stroke="#1e293b" strokeWidth="3" />
+                              <path d="M 66 14 L 62 18 L 68 22 Z" fill="#1e293b" />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Risks to Know */}
+                      <div className="bg-[#fffbe6] border border-[#fde68a] rounded-2xl p-5">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <AlertTriangle className="text-amber-600" size={18} />
+                          <h4 className="font-extrabold text-[#78350f] text-sm">Risks to Know</h4>
+                        </div>
+                        <ul className="space-y-1.5 text-xs text-[#92400e] font-medium list-disc pl-5">
+                          {topic.risks.map((risk: string, idx: number) => (
+                            <li key={idx}>{risk}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+
+                    {/* Bottom Bar */}
+                    <div className="p-4 border-t border-slate-100 bg-white flex items-center justify-between gap-3">
+                      <button
+                        onClick={() => {
+                          setIsHelpfulClicked(!isHelpfulClicked);
+                          setHelpfulCount((prev) => (isHelpfulClicked ? prev - 1 : prev + 1));
+                        }}
+                        className={`flex items-center space-x-2 border px-4 py-2.5 rounded-xl text-xs font-bold transition-colors ${
+                          isHelpfulClicked
+                            ? "bg-blue-50 border-blue-500 text-blue-700"
+                            : "border-slate-300 text-slate-700 hover:bg-slate-50"
+                        }`}
+                      >
+                        <ThumbsUp size={16} />
+                        <span>Helpful ({helpfulCount})</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          if (topic.nextTopicKey) {
+                            setSelectedTopicKey(topic.nextTopicKey);
+                            setIsHelpfulClicked(false);
+                          }
+                        }}
+                        className="flex-1 bg-[#1b3a6b] hover:bg-[#254b85] text-white text-xs font-bold py-3 rounded-xl transition-colors text-center shadow-xs"
+                      >
+                        {topic.nextTopicTitle} →
+                      </button>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

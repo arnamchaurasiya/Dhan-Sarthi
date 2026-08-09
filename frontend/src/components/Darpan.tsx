@@ -301,7 +301,7 @@ export default function DhanDarpan() {
                 })}
               </div>
               {/* Right Pie Chart */}
-              <div className="w-36 h-36 shrink-0">
+              <div className="w-36 h-36 shrink-0 relative flex items-center justify-center">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie data={assetAllocation} innerRadius={35} outerRadius={55} paddingAngle={3} dataKey="value">
@@ -312,6 +312,15 @@ export default function DhanDarpan() {
                     <Tooltip formatter={(value: any) => `₹${Number(value).toLocaleString('en-IN')}`} />
                   </PieChart>
                 </ResponsiveContainer>
+                {/* Donut Center Overlay */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
+                  <span className="text-xs font-extrabold text-[#1B3A6B]">
+                    ₹{((summary?.total_net_worth || 793450) / 100000).toFixed(1)} L
+                  </span>
+                  <span className="text-[10px] font-semibold text-slate-500 leading-none mt-0.5">
+                    Portfolio Mix
+                  </span>
+                </div>
               </div>
             </div>
           </div>

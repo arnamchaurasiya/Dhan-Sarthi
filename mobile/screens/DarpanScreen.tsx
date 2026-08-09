@@ -8,10 +8,13 @@ import {
   TouchableOpacity,
   Dimensions,
   Modal,
-  Pressable
+  Pressable,
+  Platform,
+  StatusBar,
 } from 'react-native';
 import Svg, { Path, Defs, LinearGradient, Stop, Circle, Rect, Text as SvgText, G, Line } from 'react-native-svg';
 import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 import {
   TrendingUp,
   TrendingDown,
@@ -29,7 +32,9 @@ import {
   X,
   ExternalLink,
   RefreshCw,
-  Award
+  Award,
+  User,
+  LogOut,
 } from 'lucide-react-native';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -200,6 +205,7 @@ const CHART_DATA_BY_TIMEFRAME: Record<string, { points: number[]; dates: string[
 };
 
 export default function DarpanScreen() {
+  const navigation = useNavigation<any>();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedHorizon, setSelectedHorizon] = useState('1D');
@@ -207,6 +213,7 @@ export default function DarpanScreen() {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedHolding, setSelectedHolding] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [profileModalVisible, setProfileModalVisible] = useState(false);
 
   useEffect(() => {
     // Attempt real DPI consent fetch, fallback gracefully to mock data
@@ -339,13 +346,29 @@ export default function DarpanScreen() {
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* SEBI Saarthi Hero Banner */}
       <View style={styles.heroCard}>
-        <View style={styles.heroBadgeRow}>
-          <View style={styles.badgePill}>
-            <ShieldCheck color="#ffffff" size={12} />
-            <Text style={styles.heroBadgeText}>SEBI REGISTERED DPI</Text>
+        <View style={styles.heroTopRow}>
+          <View style={styles.heroBadgeRow}>
+            <View style={styles.badgePill}>
+              <ShieldCheck color="#ffffff" size={12} />
+              <Text style={styles.heroBadgeText}>SEBI REGISTERED DPI</Text>
+            </View>
+            <Text style={styles.heroBadgeSub}>• Dhan Darpan</Text>
           </View>
-          <Text style={styles.heroBadgeSub}>• Dhan Darpan</Text>
+
+          {/* USER PROFILE BUTTON */}
+          <TouchableOpacity
+            style={styles.userProfileBtn}
+            onPress={() => setProfileModalVisible(true)}
+            activeOpacity={0.8}
+          >
+            <View style={styles.avatarCircle}>
+              <User color="#1b3a6b" size={13} />
+            </View>
+            <Text style={styles.profileNameText}>Arnam</Text>
+            <ChevronRight color="rgba(255,255,255,0.7)" size={12} style={{ marginLeft: 2 }} />
+          </TouchableOpacity>
         </View>
+
         <Text style={styles.heroTitle}>Unified Portfolio Mirror</Text>
         <Text style={styles.heroSub}>Consolidated cross-broker holdings from NSDL, CDSL & CAMS</Text>
       </View>
@@ -708,28 +731,17 @@ export default function DarpanScreen() {
                   });
                 })()}
 
-                {/* Donut Center Metrics */}
-                <SvgText
-                  x={67.5}
-                  y={64}
-                  fill="#1b3a6b"
-                  fontSize="12"
-                  fontWeight="bold"
-                  textAnchor="middle"
-                >
-                  ₹{(totalNetWorth / 100000).toFixed(1)}L
-                </SvgText>
-                <SvgText
-                  x={67.5}
-                  y={77}
-                  fill="#64748b"
-                  fontSize="7.5"
-                  fontWeight="600"
-                  textAnchor="middle"
-                >
-                  Portfolio Mix
-                </SvgText>
               </Svg>
+
+              {/* Donut Center Metrics Overlay */}
+              <View style={{ position: 'absolute', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+                <Text style={{ fontSize: 13, fontWeight: '800', color: '#1b3a6b', textAlign: 'center' }}>
+                  ₹{((totalNetWorth || 793450) / 100000).toFixed(1)} L
+                </Text>
+                <Text style={{ fontSize: 8.5, fontWeight: '600', color: '#64748b', textAlign: 'center', marginTop: 1 }}>
+                  Portfolio Mix
+                </Text>
+              </View>
             </View>
           </View>
         </View>
@@ -858,6 +870,95 @@ export default function DarpanScreen() {
           </View>
         </View>
       </Modal>
+
+      {/* USER PROFILE MODAL */}
+      <Modal
+        visible={profileModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setProfileModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={styles.profileAvatarLarge}>
+                  <User color="#1b3a6b" size={22} />
+                </View>
+                <View style={{ marginLeft: 12 }}>
+                  <Text style={styles.profileModalTitle}>Arnam Chaurasiya</Text>
+                  <View style={styles.verifiedBadgeRow}>
+                    <CheckCircle2 color="#16a34a" size={12} />
+                    <Text style={styles.verifiedBadgeText}>SEBI DPI Verified Investor</Text>
+                  </View>
+                </View>
+              </View>
+              <TouchableOpacity onPress={() => setProfileModalVisible(false)} style={styles.modalCloseBtn}>
+                <X color="#64748b" size={20} />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.profileDetailsContainer}>
+              <View style={styles.profileDetailRow}>
+                <Text style={styles.profileDetailLabel}>DPI Handle ID</Text>
+                <Text style={styles.profileDetailVal}>DPI-2026-88910</Text>
+              </View>
+
+              <View style={styles.profileDetailRow}>
+                <Text style={styles.profileDetailLabel}>Account Aggregator</Text>
+                <View style={styles.activePillGreen}>
+                  <CheckCircle2 color="#16a34a" size={12} />
+                  <Text style={styles.activePillGreenText}>Sahamati AA Active</Text>
+                </View>
+              </View>
+
+              <View style={styles.profileDetailRow}>
+                <Text style={styles.profileDetailLabel}>eKYC Status</Text>
+                <View style={styles.activePillGreen}>
+                  <ShieldCheck color="#16a34a" size={12} />
+                  <Text style={styles.activePillGreenText}>SEBI KRA Verified</Text>
+                </View>
+              </View>
+
+              <View style={styles.profileDetailRow}>
+                <Text style={styles.profileDetailLabel}>Investor Risk Profile</Text>
+                <Text style={styles.profileDetailVal}>Aggressive Growth (85/100)</Text>
+              </View>
+
+              <View style={styles.profileDetailRow}>
+                <Text style={styles.profileDetailLabel}>Linked FIP Accounts</Text>
+                <Text style={styles.profileDetailVal}>Zerodha, CAMS, RBI Direct</Text>
+              </View>
+            </View>
+
+            {/* ACTION BUTTONS */}
+            <View style={styles.profileModalActions}>
+              <TouchableOpacity
+                style={styles.logoutBtn}
+                onPress={() => {
+                  setProfileModalVisible(false);
+                  if (navigation) {
+                    navigation.reset({
+                      index: 0,
+                      routes: [{ name: 'Auth' }],
+                    });
+                  }
+                }}
+              >
+                <LogOut color="#dc2626" size={16} />
+                <Text style={styles.logoutBtnText}>Log Out</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.closeProfileBtn}
+                onPress={() => setProfileModalVisible(false)}
+              >
+                <Text style={styles.closeProfileBtnText}>Close Profile</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -879,18 +980,148 @@ const styles = StyleSheet.create({
   },
   heroCard: {
     backgroundColor: '#1b3a6b',
-    padding: 24,
-    borderBottomRightRadius: 32,
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 24) + 12 : 16,
+    paddingBottom: 22,
+    borderBottomRightRadius: 28,
+    borderBottomLeftRadius: 28,
     shadowColor: '#1b3a6b',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  heroTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
   },
   heroBadgeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    flexWrap: 'wrap',
+    flex: 1,
+  },
+  userProfileBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  avatarCircle: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: '#ffffff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 6,
+  },
+  profileNameText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  profileAvatarLarge: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#ebf3fa',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderColor: '#bfdbfe',
+    borderWidth: 1,
+  },
+  profileModalTitle: {
+    color: '#1b3a6b',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  verifiedBadgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
+  },
+  verifiedBadgeText: {
+    color: '#16a34a',
+    fontSize: 11,
+    fontWeight: '600',
+    marginLeft: 4,
+  },
+  profileDetailsContainer: {
+    marginVertical: 8,
+  },
+  profileDetailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  profileDetailLabel: {
+    color: '#64748b',
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  profileDetailVal: {
+    color: '#0f172a',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  activePillGreen: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#dcfce7',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 10,
+  },
+  activePillGreenText: {
+    color: '#15803d',
+    fontSize: 11,
+    fontWeight: '700',
+    marginLeft: 4,
+  },
+  profileModalActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginTop: 16,
+  },
+  logoutBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fef2f2',
+    borderColor: '#fecaca',
+    borderWidth: 1,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 14,
+    gap: 6,
+  },
+  logoutBtnText: {
+    color: '#dc2626',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  closeProfileBtn: {
+    flex: 1,
+    backgroundColor: '#1b3a6b',
+    paddingVertical: 14,
+    borderRadius: 14,
+    alignItems: 'center',
+  },
+  closeProfileBtnText: {
+    color: '#ffffff',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
   badgePill: {
     flexDirection: 'row',
@@ -925,7 +1156,7 @@ const styles = StyleSheet.create({
   },
   contentPadding: {
     padding: 16,
-    paddingBottom: 110,
+    paddingBottom: 24,
   },
 
   /* Main Net Worth Card */
@@ -1384,7 +1615,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     marginTop: 12,
-    marginBottom: 32,
+    marginBottom: 12,
     alignItems: 'center',
   },
   dpiFooterTitle: {
