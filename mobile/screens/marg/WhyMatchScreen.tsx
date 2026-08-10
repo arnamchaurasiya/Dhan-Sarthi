@@ -109,13 +109,14 @@ export default function WhyMatchScreen({
         <TouchableOpacity style={styles.compareLinkCard} onPress={onNavigateToCompare}>
           <Text style={styles.compareLinkText}>Compare with InvIT & Corporate Bonds →</Text>
         </TouchableOpacity>
-      </ScrollView>
 
-      <View style={styles.bottomFixedBar}>
-        <TouchableOpacity style={styles.primaryBtn} onPress={onProceedToDecision}>
-          <Text style={styles.primaryBtnText}>Review & Continue with {product.name} →</Text>
+        {/* Action Button */}
+        <TouchableOpacity style={styles.primaryBtn} onPress={onProceedToDecision} activeOpacity={0.85}>
+          <Text style={styles.primaryBtnText} numberOfLines={2}>
+            Review & Continue with {product.name} →
+          </Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -186,21 +187,15 @@ const styles = StyleSheet.create({
   },
   compareLinkText: { color: '#2563eb', fontSize: 13, fontWeight: 'bold' },
 
-  bottomFixedBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#ffffff',
-    borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
-    padding: 16,
-  },
   primaryBtn: {
     backgroundColor: '#1b3a6b',
     borderRadius: 14,
     paddingVertical: 14,
+    paddingHorizontal: 16,
     alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
+    marginBottom: 20,
   },
-  primaryBtnText: { color: '#ffffff', fontSize: 15, fontWeight: 'bold' },
+  primaryBtnText: { color: '#ffffff', fontSize: 15, fontWeight: 'bold', textAlign: 'center' },
 });

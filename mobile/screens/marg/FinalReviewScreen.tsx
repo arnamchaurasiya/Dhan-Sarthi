@@ -80,14 +80,13 @@ export default function FinalReviewScreen({
             Secured SEBI DPI Suitability Verification Complete
           </Text>
         </View>
-      </ScrollView>
 
-      <View style={styles.bottomFixedBar}>
-        <TouchableOpacity style={styles.primaryBtn} onPress={onConfirmInvestment}>
+        {/* Action Button */}
+        <TouchableOpacity style={styles.primaryBtn} onPress={onConfirmInvestment} activeOpacity={0.85}>
           <Lock color="#ffffff" size={16} style={{ marginRight: 8 }} />
-          <Text style={styles.primaryBtnText}>Confirm Investment →</Text>
+          <Text style={styles.primaryBtnText} numberOfLines={2}>Confirm Investment →</Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -134,23 +133,16 @@ const styles = StyleSheet.create({
   },
   secPillText: { color: '#166534', fontSize: 12, fontWeight: 'bold' },
 
-  bottomFixedBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#ffffff',
-    borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
-    padding: 16,
-  },
   primaryBtn: {
     backgroundColor: '#16a34a',
     borderRadius: 14,
     paddingVertical: 14,
+    paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 20,
+    marginBottom: 20,
   },
-  primaryBtnText: { color: '#ffffff', fontSize: 15, fontWeight: 'bold' },
+  primaryBtnText: { color: '#ffffff', fontSize: 15, fontWeight: 'bold', textAlign: 'center' },
 });

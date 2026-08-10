@@ -73,13 +73,12 @@ export default function FinancialGoalsScreen({ profile, onContinue }: Props) {
           />
           <Text style={styles.inputSuffix}>Years</Text>
         </View>
-      </ScrollView>
 
-      <View style={styles.bottomFixedBar}>
-        <TouchableOpacity style={styles.primaryBtn} onPress={handleNext}>
-          <Text style={styles.primaryBtnText}>Continue to Horizon →</Text>
+        {/* Action Button */}
+        <TouchableOpacity style={styles.primaryBtn} onPress={handleNext} activeOpacity={0.85}>
+          <Text style={styles.primaryBtnText} numberOfLines={2}>Continue to Horizon →</Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -142,21 +141,15 @@ const styles = StyleSheet.create({
   inputText: { flex: 1, fontSize: 16, fontWeight: 'bold', color: '#0f172a' },
   inputSuffix: { fontSize: 14, color: '#64748b', fontWeight: '500' },
 
-  bottomFixedBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#ffffff',
-    borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
-    padding: 16,
-  },
   primaryBtn: {
     backgroundColor: '#1b3a6b',
     borderRadius: 14,
     paddingVertical: 14,
+    paddingHorizontal: 16,
     alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
+    marginBottom: 20,
   },
-  primaryBtnText: { color: '#ffffff', fontSize: 15, fontWeight: 'bold' },
+  primaryBtnText: { color: '#ffffff', fontSize: 15, fontWeight: 'bold', textAlign: 'center' },
 });

@@ -11,7 +11,6 @@ import {
   ShieldAlert,
   Search,
   ScanSearch,
-  CheckCircle2,
   FileCheck,
   ChevronRight,
   AlertTriangle,
@@ -58,37 +57,6 @@ export default function RakshakHome({ onNavigate }: RakshakHomeProps) {
               <Text style={styles.overviewLinkText}>Overview</Text>
               <ChevronRight color="#2563eb" size={14} />
             </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Protection Indicators Bar */}
-        <View style={styles.indicatorsRow}>
-          <View style={styles.indicatorCard}>
-            <CheckCircle2 color="#16a34a" size={16} />
-            <View style={{ marginLeft: 6 }}>
-              <Text style={styles.indicatorLabel}>Portfolio Safety</Text>
-              <Text style={styles.indicatorValue}>✓ No critical alerts</Text>
-            </View>
-          </View>
-
-          <View style={styles.indicatorDivider} />
-
-          <View style={styles.indicatorCard}>
-            <ShieldCheck color="#2563eb" size={16} />
-            <View style={{ marginLeft: 6 }}>
-              <Text style={styles.indicatorLabel}>Entity Verification</Text>
-              <Text style={styles.indicatorValue}>✓ 4 verified entities</Text>
-            </View>
-          </View>
-
-          <View style={styles.indicatorDivider} />
-
-          <View style={styles.indicatorCard}>
-            <FileCheck color="#0284c7" size={16} />
-            <View style={{ marginLeft: 6 }}>
-              <Text style={styles.indicatorLabel}>Recent Checks</Text>
-              <Text style={styles.indicatorValue}>3 completed</Text>
-            </View>
           </View>
         </View>
       </View>
@@ -171,7 +139,7 @@ export default function RakshakHome({ onNavigate }: RakshakHomeProps) {
             <AlertTriangle color="#d97706" size={18} />
           </View>
           <View style={{ flex: 1, marginLeft: 12 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
               <Text style={styles.alertTitle}>Portfolio Concentration Alert</Text>
               <View style={styles.mediumPill}>
                 <Text style={styles.mediumPillText}>Medium Risk</Text>
@@ -285,7 +253,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1b3a6b',
     borderRadius: 14,
     padding: 14,
-    marginBottom: 14,
+    marginBottom: 0,
   },
   protectedRow: {
     flexDirection: 'row',
@@ -322,36 +290,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#2563eb',
     marginRight: 2,
-  },
-  indicatorsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f8fafc',
-    borderRadius: 12,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-  },
-  indicatorCard: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  indicatorLabel: {
-    fontSize: 10,
-    color: '#64748b',
-    fontWeight: '500',
-  },
-  indicatorValue: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: '#0f172a',
-  },
-  indicatorDivider: {
-    width: 1,
-    height: 24,
-    backgroundColor: '#cbd5e1',
-    marginHorizontal: 4,
   },
   contentPadding: {
     padding: 16,
@@ -435,12 +373,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     color: '#9a3412',
+    flex: 1,
+    marginRight: 8,
   },
   mediumPill: {
     backgroundColor: '#fde68a',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    flexShrink: 0,
   },
   mediumPillText: {
     fontSize: 10,

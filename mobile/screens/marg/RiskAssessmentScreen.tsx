@@ -111,10 +111,9 @@ export default function RiskAssessmentScreen({ onCompleteRiskAssessment }: Props
             <Text style={styles.whyAskText}>{question.explanation}</Text>
           </View>
         </View>
-      </ScrollView>
 
-      <View style={styles.bottomFixedBar}>
-        <View style={{ flexDirection: 'row', gap: 10 }}>
+        {/* Action Buttons */}
+        <View style={styles.bottomBtnRow}>
           {currentQuestionIdx > 0 && (
             <TouchableOpacity style={styles.prevBtn} onPress={handlePrev}>
               <Text style={styles.prevBtnText}>Back</Text>
@@ -126,7 +125,7 @@ export default function RiskAssessmentScreen({ onCompleteRiskAssessment }: Props
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -186,20 +185,17 @@ const styles = StyleSheet.create({
   whyAskTitle: { fontSize: 13, fontWeight: 'bold', color: '#b45309' },
   whyAskText: { fontSize: 12, color: '#92400e', marginTop: 2, lineHeight: 16 },
 
-  bottomFixedBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#ffffff',
-    borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
-    padding: 16,
+  bottomBtnRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 20,
+    marginBottom: 20,
   },
   prevBtn: {
     backgroundColor: '#f1f5f9',
     borderRadius: 14,
     paddingHorizontal: 20,
+    paddingVertical: 14,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -208,7 +204,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#1b3a6b',
     borderRadius: 14,
     paddingVertical: 14,
+    paddingHorizontal: 16,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  primaryBtnText: { color: '#ffffff', fontSize: 15, fontWeight: 'bold' },
+  primaryBtnText: { color: '#ffffff', fontSize: 15, fontWeight: 'bold', textAlign: 'center' },
 });

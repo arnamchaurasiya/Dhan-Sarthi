@@ -55,7 +55,7 @@ export default function MargHome({
               <ShieldCheck color="#ffffff" size={12} />
               <Text style={styles.heroBadgeText}>SEBI REGISTERED DPI</Text>
             </View>
-            <Text style={styles.heroBadgeSub}>• Dhan Marg Engine</Text>
+            <Text style={styles.heroBadgeSub}>• Dhan Marg</Text>
           </View>
 
           <TouchableOpacity
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 10,
   },
-  heroBadgeRow: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+  heroBadgeRow: { flexDirection: 'row', alignItems: 'center', flex: 1, marginRight: 8 },
   badgePill: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   heroBadgeText: { color: '#ffffff', fontSize: 10, fontWeight: 'bold', marginLeft: 4 },
-  heroBadgeSub: { color: '#bfdbfe', fontSize: 12, fontWeight: '600', marginLeft: 8 },
+  heroBadgeSub: { color: '#bfdbfe', fontSize: 12, fontWeight: '600', marginLeft: 6 },
   userProfileBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -256,6 +256,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.3)',
+    flexShrink: 0,
   },
   avatarCircle: {
     width: 22,
@@ -298,7 +299,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 14,
   },
-  snapshotHeaderTitle: { fontSize: 14, fontWeight: 'bold', color: '#0f172a' },
+  snapshotHeaderTitle: { fontSize: 13.5, fontWeight: 'bold', color: '#0f172a', flex: 1, marginRight: 6 },
   statusCompletePill: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -308,6 +309,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#bbf7d0',
+    flexShrink: 0,
   },
   statusCompleteText: { fontSize: 11, color: '#16a34a', fontWeight: '600' },
   snapshotGrid: { flexDirection: 'row', justifyContent: 'space-between' },

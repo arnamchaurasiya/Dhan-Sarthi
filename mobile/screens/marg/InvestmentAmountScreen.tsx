@@ -114,17 +114,17 @@ export default function InvestmentAmountScreen({
             </Text>
           </View>
         </View>
-      </ScrollView>
 
-      <View style={styles.bottomFixedBar}>
+        {/* Action Button */}
         <TouchableOpacity
           style={[styles.primaryBtn, !isValidAmount && { opacity: 0.5 }]}
           disabled={!isValidAmount}
           onPress={handleNext}
+          activeOpacity={0.85}
         >
-          <Text style={styles.primaryBtnText}>Select Investment Account →</Text>
+          <Text style={styles.primaryBtnText} numberOfLines={2}>Select Investment Account →</Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -208,21 +208,15 @@ const styles = StyleSheet.create({
   },
   unitEstimateText: { fontSize: 12, color: '#334155' },
 
-  bottomFixedBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#ffffff',
-    borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
-    padding: 16,
-  },
   primaryBtn: {
     backgroundColor: '#1b3a6b',
     borderRadius: 14,
     paddingVertical: 14,
+    paddingHorizontal: 16,
     alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
+    marginBottom: 20,
   },
-  primaryBtnText: { color: '#ffffff', fontSize: 15, fontWeight: 'bold' },
+  primaryBtnText: { color: '#ffffff', fontSize: 15, fontWeight: 'bold', textAlign: 'center' },
 });
