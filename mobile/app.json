@@ -1,15 +1,16 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "Dhan Sarthi",
+    "slug": "dhan-sarthi",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "ios": {
-      "supportsTablet": true
+    "runtimeVersion": {
+      "policy": "appVersion"
     },
     "android": {
+      "package": "com.dhansarthi.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -18,8 +19,19 @@
       },
       "predictiveBackGestureEnabled": false
     },
+    "ios": {
+      "supportsTablet": true
+    },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "9ef4c9ac-2490-467c-aaf3-f499bdfe3d64"
+      }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/9ef4c9ac-2490-467c-aaf3-f499bdfe3d64"
     }
   }
 }

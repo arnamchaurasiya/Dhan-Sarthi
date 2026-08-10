@@ -63,7 +63,6 @@ export default function DarpanHome() {
   const totalReturns = summary.totalReturns || 143450;
   const returnPct = summary.returnPct || 22.1;
   const equityPct = assetBreakdown.find(a => a.key === 'Equity')?.percentage || 48.2;
-  const hasConcentrationAlert = equityPct > 40;
 
   const quickActions = [
     { label: 'Holdings', icon: Wallet, color: '#1b3a6b', bg: '#ebf3fa', screen: 'Holdings', params: { holdings } },
@@ -73,6 +72,12 @@ export default function DarpanHome() {
     { label: 'Accounts', icon: CreditCard, color: '#16a34a', bg: '#f0fdf4', screen: 'ConnectedAccounts', params: {} },
     { label: 'Insights', icon: Brain, color: '#0ea5e9', bg: '#f0f9ff', screen: 'PortfolioInsights', params: { holdings, summary } },
   ];
+
+  const isPositive = !timeframeInfo.gain.startsWith('-');
+  const GainIcon = isPositive ? TrendingUp : TrendingDown;
+  const gainColor = isPositive ? '#16a34a' : '#dc2626';
+  const gainBg = isPositive ? '#f0fdf4' : '#fef2f2';
+  const gainBorder = isPositive ? '#bbf7d0' : '#fecaca';
 
   return (
     <ScrollView style={styles.root} showsVerticalScrollIndicator={false}>
@@ -97,84 +102,60 @@ export default function DarpanHome() {
       </View>
 
       <View style={styles.content}>
-        {/* ── CONCENTRATION ALERT ── */}
-        {hasConcentrationAlert && (
-          <TouchableOpacity
-            style={styles.alertBanner}
-            onPress={() => navigation.navigate('RiskExposure', { holdings })}
-            activeOpacity={0.85}
-          >
-            <AlertTriangle color="#d97706" size={18} />
-            <Text style={styles.alertText}>
-              ⚠️ {equityPct.toFixed(1)}% direct equity concentration detected
-            </Text>
-            <ChevronRight color="#d97706" size={16} />
-          </TouchableOpacity>
-        )}
-
         {/* ── TOTAL VALUE CARD ── */}
         <View style={styles.valueCard}>
+          {/* Top Row: Label & AA Verified */}
           <View style={styles.valueTopRow}>
-            <View>
-              <Text style={styles.valueLabelSm}>Total Portfolio Value</Text>
-              <Text style={styles.valueBig}>₹{totalValue.toLocaleString('en-IN')}</Text>
-            </View>
+            <Text style={styles.valueLabelSm}>TOTAL PORTFOLIO VALUE</Text>
             <View style={styles.aaChip}>
-              <CheckCircle2 color="#16a34a" size={13} />
+              <CheckCircle2 color="#16a34a" size={12} />
               <Text style={styles.aaChipText}>AA Verified</Text>
             </View>
           </View>
 
-          {/* Invested / Returns row */}
-          <View style={styles.metaRow}>
+          {/* Main Price & Horizon Change Pill */}
+          <View style={styles.heroAmountRow}>
+            <Text style={styles.valueBig}>₹{Math.round(totalValue).toLocaleString('en-IN')}</Text>
+            <View style={[styles.gainBadge, { backgroundColor: gainBg, borderColor: gainBorder }]}>
+              <GainIcon color={gainColor} size={12} />
+              <Text style={[styles.gainText, { color: gainColor }]}>{timeframeInfo.gain} ({timeframeInfo.gainPct})</Text>
+              <Text style={styles.gainPeriod}>in {selectedHorizon}</Text>
+            </View>
+          </View>
+
+          {/* Invested & Total Returns Summary Box */}
+          <View style={styles.metaCard}>
             <View style={styles.metaBox}>
               <Text style={styles.metaLabel}>Invested</Text>
-              <Text style={styles.metaVal}>₹{totalInvested.toLocaleString('en-IN')}</Text>
+              <Text style={styles.metaVal}>₹{Math.round(totalInvested).toLocaleString('en-IN')}</Text>
             </View>
-            <View style={[styles.metaBox, { borderLeftWidth: 1, borderLeftColor: '#e2e8f0', paddingLeft: 16 }]}>
-              <Text style={styles.metaLabel}>Returns</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                <TrendingUp color="#16a34a" size={13} />
+            <View style={styles.metaDivider} />
+            <View style={styles.metaBox}>
+              <Text style={styles.metaLabel}>Total Returns</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 }}>
+                <TrendingUp color="#16a34a" size={12} />
                 <Text style={[styles.metaVal, { color: '#16a34a' }]}>
-                  +₹{totalReturns.toLocaleString('en-IN')} ({returnPct.toFixed(1)}%)
+                  +₹{Math.round(totalReturns).toLocaleString('en-IN')} ({returnPct.toFixed(1)}%)
                 </Text>
               </View>
             </View>
           </View>
 
-          {/* Gain badge */}
-          <View style={styles.gainRow}>
-            <View style={styles.gainBadge}>
-              <TrendingUp color="#16a34a" size={14} />
-              <Text style={styles.gainText}>{timeframeInfo.gain} ({timeframeInfo.gainPct})</Text>
-            </View>
-            <Text style={styles.gainPeriod}>in {selectedHorizon}</Text>
-          </View>
-
-          {/* Time horizon pills */}
+          {/* Time Horizon Pills */}
           <View style={styles.horizonRow}>
             {TIME_HORIZONS.map(h => (
               <TouchableOpacity
                 key={h}
                 style={[styles.hPill, selectedHorizon === h && styles.hPillActive]}
                 onPress={() => { setSelectedHorizon(h); setActivePointIdx(CHART_DATA_BY_TIMEFRAME[h].points.length - 1); }}
+                activeOpacity={0.7}
               >
                 <Text style={[styles.hPillText, selectedHorizon === h && styles.hPillTextActive]}>{h}</Text>
               </TouchableOpacity>
             ))}
           </View>
 
-          {/* Active point label */}
-          {active && (
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 4 }}>
-              <Text style={{ fontSize: 11, color: '#1b3a6b', fontWeight: 'bold' }}>
-                ₹{active.val.toLocaleString('en-IN')}
-              </Text>
-              <Text style={{ fontSize: 10, color: '#94a3b8', marginLeft: 4 }}>• {active.date}</Text>
-            </View>
-          )}
-
-          {/* Interactive chart */}
+          {/* Interactive Chart */}
           <View
             style={styles.chartWrap}
             onStartShouldSetResponder={() => true}
@@ -185,25 +166,25 @@ export default function DarpanHome() {
             <Svg width={svgWidth} height={svgHeight}>
               <Defs>
                 <LinearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
-                  <Stop offset="0%" stopColor="#4f46e5" stopOpacity="0.3" />
-                  <Stop offset="100%" stopColor="#4f46e5" stopOpacity="0" />
+                  <Stop offset="0%" stopColor="#3b82f6" stopOpacity="0.22" />
+                  <Stop offset="100%" stopColor="#3b82f6" stopOpacity="0.0" />
                 </LinearGradient>
               </Defs>
               <Rect x={0} y={0} width={svgWidth} height={svgHeight} fill="transparent" />
-              {active && <Line x1={active.x} y1={0} x2={active.x} y2={svgHeight} stroke="#3b82f6" strokeWidth={1.5} strokeDasharray="4,4" />}
+              {active && <Line x1={active.x} y1={0} x2={active.x} y2={svgHeight} stroke="#3b82f6" strokeWidth={1.5} strokeDasharray="3,3" opacity={0.7} />}
               <Path d={fillD} fill="url(#grad)" />
-              <Path d={lineD} fill="none" stroke="#3b82f6" strokeWidth={2.5} />
+              <Path d={lineD} fill="none" stroke="#2563eb" strokeWidth={2.5} />
               {pointCoords.map((pt, i) => (
                 <G key={i} onPress={() => setActivePointIdx(i)}>
-                  <Circle cx={pt.x} cy={pt.y} r={20} fill="transparent" />
-                  {i === activePointIdx && <Circle cx={pt.x} cy={pt.y} r={9} fill="#3b82f6" fillOpacity={0.2} />}
-                  <Circle cx={pt.x} cy={pt.y} r={i === activePointIdx ? 5 : 3} fill={i === activePointIdx ? '#fff' : '#3b82f6'} stroke={i === activePointIdx ? '#1b3a6b' : '#3b82f6'} strokeWidth={i === activePointIdx ? 2.5 : 1} />
+                  <Circle cx={pt.x} cy={pt.y} r={18} fill="transparent" />
+                  {i === activePointIdx && <Circle cx={pt.x} cy={pt.y} r={8} fill="#2563eb" fillOpacity={0.2} />}
+                  <Circle cx={pt.x} cy={pt.y} r={i === activePointIdx ? 5 : 3} fill={i === activePointIdx ? '#fff' : '#2563eb'} stroke={i === activePointIdx ? '#1b3a6b' : '#2563eb'} strokeWidth={i === activePointIdx ? 2.5 : 1} />
                 </G>
               ))}
             </Svg>
             {active && (
-              <View pointerEvents="none" style={[styles.tooltip, { left: Math.min(Math.max(active.x - 48, 0), svgWidth - 100), top: Math.max(active.y - 42, 0) }]}>
-                <Text style={styles.tooltipVal}>₹{active.val.toLocaleString('en-IN')}</Text>
+              <View pointerEvents="none" style={[styles.tooltip, { left: Math.min(Math.max(active.x - 48, 0), svgWidth - 96), top: Math.max(active.y - 40, 2) }]}>
+                <Text style={styles.tooltipVal}>₹{Math.round(active.val).toLocaleString('en-IN')}</Text>
                 <Text style={styles.tooltipDate}>{active.date}</Text>
               </View>
             )}
@@ -418,32 +399,44 @@ const styles = StyleSheet.create({
   alertText: { color: '#92400e', fontSize: 13, fontWeight: '600', flex: 1 },
 
   valueCard: {
-    backgroundColor: '#fff', borderRadius: 20, padding: 20, marginBottom: 16,
+    backgroundColor: '#fff', borderRadius: 20, padding: 18, marginBottom: 16,
     borderWidth: 1, borderColor: 'rgba(27,58,107,0.08)',
     shadowColor: '#1b3a6b', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.06, shadowRadius: 12, elevation: 3,
   },
-  valueTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  valueLabelSm: { color: '#64748b', fontSize: 12, fontWeight: '600' },
-  valueBig: { color: '#1b3a6b', fontSize: 32, fontWeight: 'bold', marginTop: 2 },
-  aaChip: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f0fdf4', borderColor: '#bbf7d0', borderWidth: 1, paddingHorizontal: 9, paddingVertical: 4, borderRadius: 12 },
+  valueTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+  valueLabelSm: { color: '#64748b', fontSize: 11, fontWeight: '700', letterSpacing: 0.5 },
+  aaChip: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f0fdf4', borderColor: '#bbf7d0', borderWidth: 1, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 12 },
   aaChipText: { color: '#16a34a', fontSize: 11, fontWeight: '700', marginLeft: 4 },
-  metaRow: { flexDirection: 'row', marginTop: 12, marginBottom: 12 },
+
+  heroAmountRow: { flexDirection: 'row', alignItems: 'baseline', flexWrap: 'wrap', gap: 10, marginBottom: 14 },
+  valueBig: { color: '#0f172a', fontSize: 30, fontWeight: 'bold' },
+  gainBadge: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8, gap: 3 },
+  gainText: { fontSize: 12, fontWeight: '700' },
+  gainPeriod: { color: '#64748b', fontSize: 11, fontWeight: '500', marginLeft: 2 },
+
+  metaCard: {
+    flexDirection: 'row', backgroundColor: '#f8fafc', borderRadius: 14,
+    paddingHorizontal: 14, paddingVertical: 11, marginBottom: 14,
+    borderWidth: 1, borderColor: '#f1f5f9', alignItems: 'center',
+  },
   metaBox: { flex: 1 },
-  metaLabel: { color: '#94a3b8', fontSize: 11, fontWeight: '500' },
-  metaVal: { color: '#1e293b', fontSize: 14, fontWeight: '700', marginTop: 2 },
-  gainRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 14 },
-  gainBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#dcfce7', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
-  gainText: { color: '#16a34a', fontSize: 13, fontWeight: '700', marginLeft: 4 },
-  gainPeriod: { color: '#94a3b8', fontSize: 12, marginLeft: 8, fontWeight: '500' },
-  horizonRow: { flexDirection: 'row', backgroundColor: '#f1f5f9', borderRadius: 12, padding: 3, marginBottom: 14 },
+  metaDivider: { width: 1, height: 26, backgroundColor: '#e2e8f0', marginHorizontal: 12 },
+  metaLabel: { color: '#64748b', fontSize: 11, fontWeight: '600' },
+  metaVal: { color: '#0f172a', fontSize: 14, fontWeight: '700', marginTop: 2 },
+
+  horizonRow: { flexDirection: 'row', backgroundColor: '#f1f5f9', borderRadius: 12, padding: 3, marginBottom: 12 },
   hPill: { flex: 1, paddingVertical: 6, alignItems: 'center', borderRadius: 9 },
   hPillActive: { backgroundColor: '#1b3a6b' },
   hPillText: { color: '#64748b', fontSize: 12, fontWeight: '600' },
   hPillTextActive: { color: '#fff', fontWeight: 'bold' },
-  chartWrap: { height: 110, position: 'relative', alignItems: 'center', justifyContent: 'center' },
-  tooltip: { position: 'absolute', backgroundColor: '#1e293b', paddingHorizontal: 9, paddingVertical: 4, borderRadius: 7, alignItems: 'center' },
+
+  chartWrap: { height: 110, position: 'relative', alignItems: 'center', justifyContent: 'center', marginTop: 2 },
+  tooltip: {
+    position: 'absolute', backgroundColor: '#0f172a', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8, alignItems: 'center',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.15, shadowRadius: 4, elevation: 4,
+  },
   tooltipVal: { color: '#fff', fontSize: 11, fontWeight: 'bold' },
-  tooltipDate: { color: '#94a3b8', fontSize: 9 },
+  tooltipDate: { color: '#94a3b8', fontSize: 9, marginTop: 1 },
 
   quickGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: 16, rowGap: 14 },
   quickItem: { alignItems: 'center', width: '30%' },
