@@ -25,9 +25,7 @@ import {
   PieChart,
   ArrowUpRight,
   Filter,
-  FileText,
   ChevronRight,
-  Sparkles,
   Info,
   X,
   ExternalLink,
@@ -523,7 +521,7 @@ export default function DarpanScreen() {
         </View>
 
         {/* Holdings Filter Chips */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScrollView}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScrollView} contentContainerStyle={{ paddingHorizontal: 4, paddingVertical: 4, alignItems: 'center' }}>
           {['All', 'Equity', 'Mutual Funds', 'Fixed Income', 'Gold', 'REITs'].map((cat) => (
             <TouchableOpacity
               key={cat}
@@ -614,7 +612,7 @@ export default function DarpanScreen() {
           );
         })}
 
-        {/* Portfolio Distribution Section with Left-Right Orientation */}
+        {/* Portfolio Distribution Section with Top-Bottom Orientation */}
         <View style={styles.card}>
           <View style={styles.cardHeaderRow}>
             <View style={styles.cardIconWrap}>
@@ -623,70 +621,33 @@ export default function DarpanScreen() {
             <Text style={styles.cardTitle}>Asset Class Distribution</Text>
           </View>
 
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 14 }}>
-            {/* Left Side: Text List with Spread Percentage Badges */}
-            <View style={{ flex: 1, paddingRight: 10 }}>
-              {assetBreakdown.map((item, idx) => (
-                <TouchableOpacity
-                  key={idx}
-                  style={[
-                    styles.legendChip,
-                    {
-                      marginBottom: 7,
-                      paddingVertical: 7,
-                      paddingHorizontal: 10,
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      borderRadius: 8,
-                      backgroundColor: '#f8fafc',
-                      borderWidth: 1,
-                      borderColor: '#e2e8f0'
-                    },
-                    selectedCategory === item.key && styles.legendChipActive
-                  ]}
-                  onPress={() => setSelectedCategory(selectedCategory === item.key ? 'All' : item.key)}
-                >
-                  <View style={{ flexDirection: 'row', alignItems: 'center', flexShrink: 1 }}>
-                    <View style={[styles.legendDot, { backgroundColor: item.color, width: 9, height: 9, borderRadius: 5, marginRight: 6 }]} />
-                    <Text style={{ fontSize: 11, fontWeight: '600', color: '#1e293b' }}>
-                      {item.label}
-                    </Text>
-                  </View>
-                  <Text style={{ fontSize: 11, fontWeight: '800', color: item.color, marginLeft: 6 }}>
-                    {item.percentage.toFixed(0)}%
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            {/* Right Side: Gapless 360 SVG Donut Pie Chart */}
-            <View style={{ width: 135, height: 135, alignItems: 'center', justifyContent: 'center' }}>
-              <Svg width={135} height={135} viewBox="0 0 135 135">
+          <View style={{ alignItems: 'center', marginTop: 12 }}>
+            {/* Top Side: SVG Donut Pie Chart Centered */}
+            <View style={{ width: 180, height: 180, alignItems: 'center', justifyContent: 'center', marginVertical: 8 }}>
+              <Svg width={180} height={180} viewBox="0 0 180 180">
                 {(() => {
                   const validSlices = assetBreakdown.filter(a => a.percentage > 0);
 
-                  // If only 1 category dominates (e.g. 100%), render clean Donut Ring to avoid SVG arc degeneration
                   if (validSlices.length === 1) {
                     const single = validSlices[0];
                     return (
                       <Circle
-                        cx={67.5}
-                        cy={67.5}
-                        r={47}
+                        cx={90}
+                        cy={90}
+                        r={64}
                         fill="none"
                         stroke={single.color}
-                        strokeWidth={22}
+                        strokeWidth={26}
                       />
                     );
                   }
 
                   const totalPct = assetBreakdown.reduce((sum, a) => sum + a.percentage, 0) || 100;
                   let accumulatedAngle = -Math.PI / 2;
-                  const cx = 67.5;
-                  const cy = 67.5;
-                  const outerR = 58;
-                  const innerR = 36;
+                  const cx = 90;
+                  const cy = 90;
+                  const outerR = 78;
+                  const innerR = 48;
 
                   return assetBreakdown.map((item, idx) => {
                     const slicePct = item.percentage > 0 ? item.percentage : 0;
@@ -730,18 +691,61 @@ export default function DarpanScreen() {
                     );
                   });
                 })()}
-
               </Svg>
 
               {/* Donut Center Metrics Overlay */}
               <View style={{ position: 'absolute', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
-                <Text style={{ fontSize: 13, fontWeight: '800', color: '#1b3a6b', textAlign: 'center' }}>
+                <Text style={{ fontSize: 18, fontWeight: '800', color: '#1b3a6b', textAlign: 'center' }}>
                   ₹{((totalNetWorth || 793450) / 100000).toFixed(1)} L
                 </Text>
-                <Text style={{ fontSize: 8.5, fontWeight: '600', color: '#64748b', textAlign: 'center', marginTop: 1 }}>
+                <Text style={{ fontSize: 10, fontWeight: '600', color: '#64748b', textAlign: 'center', marginTop: 2 }}>
                   Portfolio Mix
                 </Text>
               </View>
+            </View>
+
+            {/* Bottom Side: Full Width Description / Legend List */}
+            <View style={{ width: '100%', marginTop: 12 }}>
+              {assetBreakdown.map((item, idx) => (
+                <TouchableOpacity
+                  key={idx}
+                  style={[
+                    styles.legendChip,
+                    {
+                      marginBottom: 8,
+                      paddingVertical: 10,
+                      paddingHorizontal: 14,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      borderRadius: 12,
+                      backgroundColor: '#f8fafc',
+                      borderWidth: 1,
+                      borderColor: selectedCategory === item.key ? '#1b3a6b' : '#e2e8f0'
+                    },
+                    selectedCategory === item.key && styles.legendChipActive
+                  ]}
+                  onPress={() => setSelectedCategory(selectedCategory === item.key ? 'All' : item.key)}
+                  activeOpacity={0.8}
+                >
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={[styles.legendDot, { backgroundColor: item.color, width: 10, height: 10, borderRadius: 5, marginRight: 8 }]} />
+                    <Text style={{ fontSize: 13, fontWeight: '600', color: '#1e293b' }}>
+                      {item.label}
+                    </Text>
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 12, fontWeight: '600', color: '#64748b', marginRight: 10 }}>
+                      ₹{item.value.toLocaleString('en-IN')}
+                    </Text>
+                    <View style={{ backgroundColor: item.color + '18', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 }}>
+                      <Text style={{ fontSize: 12, fontWeight: 'bold', color: item.color }}>
+                        {item.percentage.toFixed(0)}%
+                      </Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
         </View>
@@ -771,33 +775,6 @@ export default function DarpanScreen() {
           </View>
         </View>
 
-        {/* Tax & ITR Insights Section */}
-        <View style={styles.card}>
-          <View style={styles.cardHeaderRow}>
-            <View style={styles.cardIconWrapTeal}>
-              <FileText color="#0d9488" size={18} />
-            </View>
-            <Text style={styles.cardTitle}>Auto Capital Gains & Tax Summary (ITR)</Text>
-          </View>
-
-          <View style={styles.taxSummaryGrid}>
-            <View style={styles.taxBox}>
-              <Text style={styles.taxLabel}>STCG (Realized)</Text>
-              <Text style={styles.taxValue}>₹36,348</Text>
-              <Text style={styles.taxSub}>Taxable @ 20%</Text>
-            </View>
-            <View style={styles.taxBox}>
-              <Text style={styles.taxLabel}>LTCG (Realized)</Text>
-              <Text style={styles.taxValue}>₹36,556</Text>
-              <Text style={styles.taxSubGreen}>Below ₹1.25L Exemption</Text>
-            </View>
-          </View>
-
-          <TouchableOpacity style={styles.exportBtn}>
-            <Sparkles color="#ffffff" size={16} />
-            <Text style={styles.exportBtnText}>Capital Gains Summary</Text>
-          </TouchableOpacity>
-        </View>
 
         {/* DPI Connected Data Sources Footer */}
         <View style={styles.dpiFooterCard}>
@@ -1156,7 +1133,7 @@ const styles = StyleSheet.create({
   },
   contentPadding: {
     padding: 16,
-    paddingBottom: 24,
+    paddingBottom: 100,
   },
 
   /* Main Net Worth Card */
@@ -1316,12 +1293,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginRight: 8,
   },
-  cardIconWrapTeal: {
-    padding: 6,
-    backgroundColor: '#ccfbf1',
-    borderRadius: 8,
-    marginRight: 8,
-  },
+
   cardTitle: {
     color: '#1e293b',
     fontSize: 15,
@@ -1423,58 +1395,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 
-  /* Tax Summary */
-  taxSummaryGrid: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 14,
-  },
-  taxBox: {
-    flex: 1,
-    backgroundColor: '#f8fafc',
-    borderColor: '#e2e8f0',
-    borderWidth: 1,
-    padding: 12,
-    borderRadius: 12,
-  },
-  taxLabel: {
-    color: '#64748b',
-    fontSize: 11,
-    fontWeight: '600',
-  },
-  taxValue: {
-    color: '#0f172a',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 2,
-  },
-  taxSub: {
-    color: '#0d9488',
-    fontSize: 11,
-    fontWeight: '500',
-    marginTop: 2,
-  },
-  taxSubGreen: {
-    color: '#16a34a',
-    fontSize: 11,
-    fontWeight: '500',
-    marginTop: 2,
-  },
-  exportBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#1b3a6b',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    gap: 6,
-  },
-  exportBtnText: {
-    color: '#ffffff',
-    fontSize: 13,
-    fontWeight: '700',
-  },
 
   /* Holdings List Header & Filters */
   holdingsHeaderRow: {
@@ -1502,15 +1422,19 @@ const styles = StyleSheet.create({
   },
   filterScrollView: {
     marginBottom: 12,
+    flexGrow: 0,
   },
   filterTab: {
     backgroundColor: '#ffffff',
     borderColor: '#e2e8f0',
     borderWidth: 1,
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 12,
     marginRight: 8,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   filterTabActive: {
     backgroundColor: '#1b3a6b',

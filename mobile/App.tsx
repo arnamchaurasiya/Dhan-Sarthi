@@ -8,7 +8,7 @@ import { LayoutDashboard, BookOpen, Compass, ShieldAlert } from 'lucide-react-na
 import AuthScreen from './screens/AuthScreen';
 import EkycScreen from './screens/EkycScreen';
 import ConsentScreen from './screens/ConsentScreen';
-import DarpanScreen from './screens/DarpanScreen';
+import DarpanNavigator from './screens/darpan/DarpanNavigator';
 import GyaanScreen from './screens/GyaanScreen';
 import MargScreen from './screens/MargScreen';
 import RakshakScreen from './screens/RakshakScreen';
@@ -40,7 +40,7 @@ function MainTabs() {
     >
       <Tab.Screen 
         name="Darpan" 
-        component={DarpanScreen} 
+        component={DarpanNavigator} 
         options={{
           title: 'Dhan Darpan',
           tabBarIcon: ({ color, size }) => (
