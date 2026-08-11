@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, View, StyleSheet, useWindowDimensions, Text } from 'react-native';
+import { Platform, View, StyleSheet, useWindowDimensions, Text, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
