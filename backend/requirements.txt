@@ -1,6 +1,7 @@
 fastapi
 uvicorn
 pydantic
+pydantic-settings
 python-dotenv
 pyjwt
 passlib[bcrypt]
@@ -9,3 +10,4 @@ psycopg2-binary
 alembic
 redis
 requests
+

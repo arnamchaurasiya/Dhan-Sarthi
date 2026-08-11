@@ -138,16 +138,18 @@ export default function LessonContentScreen({
 
         {/* Visual Mechanism Diagram (SVG) */}
         <View style={styles.diagramCard}>
-          <Text style={styles.diagramTitle}>HOW REIT CASH FLOW WORKS</Text>
+          <Text style={styles.diagramTitle}>
+            {getUITranslation('howReitCashFlowWorks', activeLangObj.label)}
+          </Text>
 
           <Svg height="140" width="100%" viewBox="0 0 320 120">
             {/* Box 1: Commercial Property */}
             <Rect x="10" y="20" width="80" height="50" rx="8" fill="#dbeafe" stroke="#2563eb" strokeWidth="1.5" />
             <SvgText x="50" y="42" fontSize="10" fontWeight="bold" fill="#1e40af" textAnchor="middle">
-              Commercial
+              {getUITranslation('commercialProperty', activeLangObj.label)}
             </SvgText>
             <SvgText x="50" y="56" fontSize="9" fill="#1e40af" textAnchor="middle">
-              Offices & Malls
+              {getUITranslation('officesAndMalls', activeLangObj.label)}
             </SvgText>
 
             {/* Arrow 1 */}
@@ -156,10 +158,10 @@ export default function LessonContentScreen({
             {/* Box 2: SPV Rental Collections */}
             <Rect x="130" y="20" width="70" height="50" rx="8" fill="#fef3c7" stroke="#d97706" strokeWidth="1.5" />
             <SvgText x="165" y="42" fontSize="10" fontWeight="bold" fill="#b45309" textAnchor="middle">
-              Monthly
+              {getUITranslation('monthlyRentIncome', activeLangObj.label).split(' ')[0] || 'Monthly'}
             </SvgText>
             <SvgText x="165" y="56" fontSize="9" fill="#b45309" textAnchor="middle">
-              Rent Income
+              {getUITranslation('monthlyRentIncome', activeLangObj.label).split(' ').slice(1).join(' ') || 'Rent Income'}
             </SvgText>
 
             {/* Arrow 2 */}
@@ -168,16 +170,16 @@ export default function LessonContentScreen({
             {/* Box 3: 90% NDCF to Investors */}
             <Rect x="240" y="20" width="70" height="50" rx="8" fill="#dcfce7" stroke="#059669" strokeWidth="1.5" />
             <SvgText x="275" y="40" fontSize="10" fontWeight="bold" fill="#15803d" textAnchor="middle">
-              90% NDCF
+              {getUITranslation('ndcfPayout', activeLangObj.label).split(' ')[0] || '90% NDCF'}
             </SvgText>
             <SvgText x="275" y="54" fontSize="9" fill="#15803d" textAnchor="middle">
-              Payout
+              {getUITranslation('ndcfPayout', activeLangObj.label).split(' ').slice(1).join(' ') || 'Payout'}
             </SvgText>
 
             {/* Bottom Label */}
-            <Rect x="40" y="85" width="240" height="24" rx="12" fill="#1e293b" />
-            <SvgText x="160" y="101" fontSize="10" fontWeight="bold" fill="#ffffff" textAnchor="middle">
-              SEBI Mandate: Quarterly Dividend Distribution
+            <Rect x="20" y="85" width="280" height="24" rx="12" fill="#1e293b" />
+            <SvgText x="160" y="101" fontSize="9" fontWeight="bold" fill="#ffffff" textAnchor="middle">
+              {getUITranslation('sebiMandate', activeLangObj.label)}
             </SvgText>
           </Svg>
         </View>

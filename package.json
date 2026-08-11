@@ -1,0 +1,9 @@
+{
+  "name": "dhan-sarthi-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd mobile && npm install && npm run build",
+    "start": "cd mobile && npm run start"
+  }
+}

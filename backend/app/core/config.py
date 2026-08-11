@@ -7,8 +7,11 @@ import os
 
 try:
     from pydantic_settings import BaseSettings
-except ImportError:
-    from pydantic import BaseSettings  # pydantic v1 fallback
+except (ImportError, Exception):
+    try:
+        from pydantic.v1 import BaseSettings
+    except (ImportError, AttributeError, Exception):
+        from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):

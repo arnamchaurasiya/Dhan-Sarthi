@@ -22,6 +22,7 @@ import {
   User,
 } from 'lucide-react-native';
 import axios from 'axios';
+import { SUPPORTED_LANGUAGES, getUITranslation } from './gyaanTranslations';
 
 interface QuizData {
   question: string;

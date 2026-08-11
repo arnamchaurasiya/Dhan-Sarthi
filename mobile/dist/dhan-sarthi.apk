@@ -1,0 +1,5 @@
+# Dhan-Sarthi Android App Package (v1.0.0-preview)
+# SEBI Securities Market TechSprint Hackathon Prototype
+#
+# To build a production APK, run:
+# npx eas-cli build -p android --profile preview
