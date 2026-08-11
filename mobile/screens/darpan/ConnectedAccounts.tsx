@@ -53,13 +53,7 @@ export default function ConnectedAccounts() {
           </View>
         </View>
 
-        {/* Consent info */}
-        <View style={styles.consentBanner}>
-          <Text style={styles.consentTitle}>🔐 You control your data</Text>
-          <Text style={styles.consentDesc}>
-            All account connections are made via the Sahamati Account Aggregator framework. You have given explicit consent for each connection. You can revoke access at any time.
-          </Text>
-        </View>
+
 
         {/* Connected accounts list */}
         <Text style={styles.sectionTitle}>Connected Sources</Text>
@@ -161,12 +155,6 @@ const styles = StyleSheet.create({
   summaryLabel: { color: '#94a3b8', fontSize: 11, textAlign: 'center' },
   summaryDivider: { width: 1, height: 40, backgroundColor: '#e2e8f0' },
 
-  consentBanner: {
-    backgroundColor: '#f0fdf4', borderColor: '#bbf7d0', borderWidth: 1,
-    borderRadius: 14, padding: 14, marginBottom: 16,
-  },
-  consentTitle: { color: '#15803d', fontSize: 14, fontWeight: 'bold', marginBottom: 6 },
-  consentDesc: { color: '#166534', fontSize: 13, lineHeight: 20 },
 
   sectionTitle: { color: '#1e293b', fontSize: 17, fontWeight: 'bold', marginBottom: 10 },
 

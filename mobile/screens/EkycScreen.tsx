@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
 import axios from 'axios';
 import { Fingerprint, CheckCircle2 } from 'lucide-react-native';
 
@@ -59,8 +59,11 @@ export default function EkycScreen({ navigation }: any) {
       <View style={styles.card}>
         {success ? (
           <View style={styles.successBox}>
-            <CheckCircle2 color="#16a34a" size={56} style={{ marginBottom: 12 }} />
-            <Text style={styles.successTitle}>Identity Verified Successfully</Text>
+            <Image source={require('../assets/passport size photo.jpg')} style={styles.verifiedAvatar} />
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
+              <CheckCircle2 color="#16a34a" size={20} style={{ marginRight: 6 }} />
+              <Text style={styles.successTitle}>Identity Verified Successfully</Text>
+            </View>
             <Text style={styles.successSub}>Redirecting to Account Aggregator...</Text>
           </View>
         ) : (
@@ -114,7 +117,8 @@ const styles = StyleSheet.create({
   buttonText: { color: '#ffffff', fontSize: 15, fontWeight: 'bold' },
   errorText: { color: '#dc2626', marginBottom: 12, textAlign: 'center', fontSize: 13 },
   successBox: { alignItems: 'center', paddingVertical: 24 },
-  successTitle: { color: '#16a34a', fontSize: 20, fontWeight: 'bold', marginBottom: 6, textAlign: 'center' },
+  verifiedAvatar: { width: 72, height: 72, borderRadius: 36, borderWidth: 3, borderColor: '#16a34a', marginBottom: 14, overflow: 'hidden', transform: [{ translateY: 5 }, { scale: 1.08 }] },
+  successTitle: { color: '#16a34a', fontSize: 18, fontWeight: 'bold', textAlign: 'center' },
   successSub: { color: '#64748b', fontSize: 13, textAlign: 'center' }
 });
 

@@ -89,26 +89,18 @@ export default function PortfolioHealth() {
                   <Text style={[styles.factorScoreNum, { color: fl.color }]}>{factor.score}</Text>
                   <Text style={[styles.factorScoreMax, { color: fl.color }]}>/100</Text>
                 </View>
+                <ChevronRight
+                  color="#94a3b8"
+                  size={16}
+                  style={{ transform: [{ rotate: isExp ? '90deg' : '0deg' }] }}
+                />
               </View>
 
               {isExp && (
                 <View style={styles.factorExpanded}>
                   <Text style={styles.factorDesc}>{factor.description}</Text>
-                  <TouchableOpacity
-                    style={styles.factorAction}
-                    onPress={() => navigation.navigate('ActionCenter', {})}
-                  >
-                    <Text style={[styles.factorActionText, { color: factor.color }]}>
-                      What can I do? →
-                    </Text>
-                  </TouchableOpacity>
                 </View>
               )}
-
-              <ChevronRight
-                color="#94a3b8" size={14}
-                style={[styles.factorChevron, { transform: [{ rotate: isExp ? '90deg' : '0deg' }] }]}
-              />
             </TouchableOpacity>
           );
         })}
@@ -132,13 +124,6 @@ export default function PortfolioHealth() {
           ))}
         </View>
 
-        {/* CTA */}
-        <TouchableOpacity
-          style={styles.ctaBtn}
-          onPress={() => navigation.navigate('ActionCenter', {})}
-        >
-          <Text style={styles.ctaBtnText}>View Action Center →</Text>
-        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -197,10 +182,8 @@ const styles = StyleSheet.create({
   factorScoreNum: { fontSize: 18, fontWeight: 'bold' },
   factorScoreMax: { fontSize: 10, fontWeight: '600' },
   factorExpanded: { marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#f1f5f9' },
-  factorDesc: { color: '#475569', fontSize: 13, lineHeight: 21, marginBottom: 10 },
-  factorAction: { alignSelf: 'flex-start' },
-  factorActionText: { fontSize: 13, fontWeight: '700' },
-  factorChevron: { position: 'absolute', top: 14, right: 14 },
+  factorDesc: { color: '#475569', fontSize: 13, lineHeight: 21 },
+
 
   card: {
     backgroundColor: '#fff', borderRadius: 18, padding: 16, marginBottom: 14,
@@ -214,7 +197,4 @@ const styles = StyleSheet.create({
   compareMetric: { flex: 2, color: '#475569', fontSize: 12, fontWeight: '500' },
   compareYours: { flex: 1, fontSize: 12, fontWeight: '700', textAlign: 'center' },
   compareBench: { flex: 1, color: '#64748b', fontSize: 12, textAlign: 'right' },
-
-  ctaBtn: { backgroundColor: '#1b3a6b', borderRadius: 14, paddingVertical: 16, alignItems: 'center' },
-  ctaBtnText: { color: '#fff', fontSize: 15, fontWeight: 'bold' },
 });

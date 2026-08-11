@@ -5,6 +5,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Platform,
+  StatusBar,
 } from 'react-native';
 import {
   ArrowLeft,
@@ -14,6 +16,7 @@ import {
   ShieldAlert,
   ChevronRight,
   Filter,
+  ShieldCheck,
 } from 'lucide-react-native';
 import { INITIAL_SAFETY_ALERTS, SafetyAlert } from './rakshakData';
 
@@ -38,11 +41,17 @@ export default function SafetyAlertCenter({
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
       <View style={styles.subHeaderContainer}>
-        <TouchableOpacity style={styles.backButton} onPress={onBack}>
-          <ArrowLeft color="#1b3a6b" size={22} />
+        <TouchableOpacity style={styles.backButton} onPress={onBack} activeOpacity={0.8}>
+          <ArrowLeft color="#ffffff" size={20} />
         </TouchableOpacity>
-        <Text style={styles.subHeaderTitle}>Safety Alert Center</Text>
-        <View style={{ width: 22 }} />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.subHeaderTitle}>Safety Alert Center</Text>
+          <Text style={styles.subHeaderSub}>Risk Notifications & Warnings</Text>
+        </View>
+        <View style={styles.headerBadge}>
+          <ShieldCheck color="#ffffff" size={12} />
+          <Text style={styles.headerBadgeText}>SEBI</Text>
+        </View>
       </View>
 
       <View style={styles.contentPadding}>
@@ -126,20 +135,43 @@ const styles = StyleSheet.create({
   subHeaderContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 14,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 24) + 12 : 16,
+    paddingBottom: 16,
+    backgroundColor: '#1b3a6b',
+    gap: 12,
   },
   backButton: {
-    padding: 4,
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   subHeaderTitle: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#1b3a6b',
+    color: '#ffffff',
+  },
+  subHeaderSub: {
+    fontSize: 11.5,
+    color: '#bfdbfe',
+  },
+  headerBadge: {
+    marginLeft: 'auto',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  headerBadgeText: {
+    color: '#ffffff',
+    fontSize: 11,
+    fontWeight: 'bold',
+    marginLeft: 3,
   },
   contentPadding: {
     padding: 16,

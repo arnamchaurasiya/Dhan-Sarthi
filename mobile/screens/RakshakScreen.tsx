@@ -5,8 +5,8 @@ import RakshakNavigator from './rakshak/RakshakNavigator';
 
 export default function RakshakScreen() {
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+    <SafeAreaView style={styles.safeArea} edges={['left', 'right']}>
+      <StatusBar barStyle="light-content" backgroundColor="#1b3a6b" />
       <View style={styles.container}>
         <RakshakNavigator />
       </View>
@@ -17,7 +17,7 @@ export default function RakshakScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#1b3a6b',
   },
   container: {
     flex: 1,

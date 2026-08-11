@@ -7,6 +7,7 @@ import {
   ScrollView,
   Platform,
   StatusBar,
+  Image,
 } from 'react-native';
 import {
   ShieldCheck,
@@ -50,45 +51,23 @@ export default function MargHome({
       {/* SEBI Saarthi Hero Banner with Darpan Linkage */}
       <View style={styles.heroCard}>
         <View style={styles.heroTopRow}>
-          <View style={styles.heroBadgeRow}>
-            <View style={styles.badgePill}>
-              <ShieldCheck color="#ffffff" size={12} />
-              <Text style={styles.heroBadgeText}>SEBI REGISTERED DPI</Text>
-            </View>
-            <Text style={styles.heroBadgeSub}>• Dhan Marg</Text>
+          <View style={{ flex: 1, marginRight: 12 }}>
+            <Text style={styles.heroTitle}>Investment Path</Text>
+            <Text style={styles.heroSub}>
+              Decision & Suitability Layer
+            </Text>
           </View>
-
           <TouchableOpacity
-            style={styles.userProfileBtn}
+            style={styles.userProfileAvatarOnlyBtn}
             onPress={onNavigateToProfile}
             activeOpacity={0.8}
           >
-            <View style={styles.avatarCircle}>
-              <User color="#1b3a6b" size={13} />
-            </View>
-            <Text style={styles.profileNameText}>Arnam</Text>
-            <ChevronRight color="rgba(255,255,255,0.7)" size={12} style={{ marginLeft: 2 }} />
+            <Image source={require('../../assets/passport size photo.jpg')} style={styles.userProfileAvatarOnlyImg} />
           </TouchableOpacity>
         </View>
-
-        <Text style={styles.heroTitle}>Dhan Marg</Text>
-        <Text style={styles.heroSub}>
-          Decision & Suitability Layer • “What types of investments suit me & why?”
-        </Text>
       </View>
 
       <View style={styles.contentPadding}>
-        {/* Connection to Dhan Darpan Portfolio Banner */}
-        <View style={styles.darpanConnectionCard}>
-          <View style={styles.darpanConnHeader}>
-            <PieChart color="#2563eb" size={18} style={{ marginRight: 8 }} />
-            <Text style={styles.darpanConnTitle}>Connected to Dhan Darpan</Text>
-          </View>
-          <Text style={styles.darpanConnText}>
-            Based on your current portfolio of <Text style={styles.boldText}>₹7.9L</Text> (48.2% Direct Equity concentration), Dhan Marg recommends adding non-correlated assets.
-          </Text>
-        </View>
-
         {/* Snapshot Card */}
         <View style={styles.snapshotCard}>
           <View style={styles.snapshotHeaderRow}>
@@ -232,9 +211,8 @@ const styles = StyleSheet.create({
   },
   heroTopRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
-    marginBottom: 10,
   },
   heroBadgeRow: { flexDirection: 'row', alignItems: 'center', flex: 1, marginRight: 8 },
   badgePill: {
@@ -247,27 +225,18 @@ const styles = StyleSheet.create({
   },
   heroBadgeText: { color: '#ffffff', fontSize: 10, fontWeight: 'bold', marginLeft: 4 },
   heroBadgeSub: { color: '#bfdbfe', fontSize: 12, fontWeight: '600', marginLeft: 6 },
-  userProfileBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    flexShrink: 0,
-  },
-  avatarCircle: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+  userProfileAvatarOnlyBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.85)',
+    overflow: 'hidden',
     backgroundColor: '#ffffff',
-    alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 6,
+    alignItems: 'center',
   },
-  profileNameText: { color: '#ffffff', fontSize: 12, fontWeight: '600' },
+  userProfileAvatarOnlyImg: { width: 36, height: 36, borderRadius: 18, transform: [{ translateY: 3 }, { scale: 1.08 }] },
   heroTitle: { color: '#ffffff', fontSize: 24, fontWeight: 'bold' },
   heroSub: { color: '#cbd5e1', fontSize: 13, marginTop: 4, lineHeight: 18 },
 

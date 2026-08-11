@@ -6,7 +6,7 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import {
   ArrowLeft, TrendingUp, TrendingDown, ShieldCheck,
-  BookOpen, Compass, ChevronRight, Info,
+  Info,
 } from 'lucide-react-native';
 import Svg, { Path, Defs, LinearGradient, Stop } from 'react-native-svg';
 
@@ -179,29 +179,7 @@ export default function HoldingDetail() {
           </View>
         )}
 
-        {/* CTAs */}
-        <View style={styles.ctaRow}>
-          <TouchableOpacity
-            style={styles.ctaGyaan}
-            onPress={() => navigation.navigate('Gyaan')}
-            activeOpacity={0.85}
-          >
-            <BookOpen color="#1b3a6b" size={16} />
-            <Text style={styles.ctaGyaanText}>Understand via Dhan Gyaan</Text>
-            <ChevronRight color="#1b3a6b" size={14} style={{ marginLeft: 'auto' }} />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.ctaRow}>
-          <TouchableOpacity
-            style={styles.ctaMarg}
-            onPress={() => navigation.navigate('Marg')}
-            activeOpacity={0.85}
-          >
-            <Compass color="#fff" size={16} />
-            <Text style={styles.ctaMargText}>Assess Suitability in Dhan Marg</Text>
-            <ChevronRight color="#fff" size={14} style={{ marginLeft: 'auto' }} />
-          </TouchableOpacity>
-        </View>
+
       </ScrollView>
     </View>
   );
@@ -264,15 +242,4 @@ const styles = StyleSheet.create({
   sectorBadge: { backgroundColor: '#ebf3fa', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10 },
   sectorBadgeText: { color: '#1b3a6b', fontSize: 12, fontWeight: '700' },
 
-  ctaRow: { marginBottom: 10 },
-  ctaGyaan: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: '#ebf3fa',
-    borderColor: '#bfdbfe', borderWidth: 1, paddingVertical: 15, paddingHorizontal: 16, borderRadius: 14, gap: 10,
-  },
-  ctaGyaanText: { color: '#1b3a6b', fontSize: 14, fontWeight: '700', flex: 1 },
-  ctaMarg: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: '#1b3a6b',
-    paddingVertical: 15, paddingHorizontal: 16, borderRadius: 14, gap: 10,
-  },
-  ctaMargText: { color: '#fff', fontSize: 14, fontWeight: '700', flex: 1 },
 });

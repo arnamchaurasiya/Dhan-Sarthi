@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { ShieldCheck, RefreshCw, CheckCircle2, ChevronRight, PieChart } from 'lucide-react-native';
 import { InvestorProfile } from './margData';
 
@@ -12,6 +12,18 @@ interface Props {
 export default function InvestorProfileScreen({ profile, onUpdateProfile, onRunEngine }: Props) {
   return (
     <ScrollView style={styles.scrollBody} contentContainerStyle={styles.scrollContent}>
+      {/* User Header Profile Card */}
+      <View style={styles.userHeaderCard}>
+        <Image source={require('../../assets/passport size photo.jpg')} style={styles.userAvatarImage} />
+        <View style={{ flex: 1, marginLeft: 12 }}>
+          <Text style={styles.userName}>Arnam Chaurasiya</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
+            <CheckCircle2 color="#16a34a" size={13} />
+            <Text style={styles.userBadgeText}> Verified Investor • SEBI DPI</Text>
+          </View>
+        </View>
+      </View>
+
       <Text style={styles.headerSubCaption}>
         Core inputs required by SEBI-compliant suitability evaluation
       </Text>
@@ -97,6 +109,19 @@ export default function InvestorProfileScreen({ profile, onUpdateProfile, onRunE
 const styles = StyleSheet.create({
   scrollBody: { flex: 1, backgroundColor: '#f8fafc' },
   scrollContent: { padding: 16, paddingBottom: 110 },
+  userHeaderCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    padding: 14,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    marginBottom: 12,
+  },
+  userAvatarImage: { width: 50, height: 50, borderRadius: 25, borderWidth: 2, borderColor: '#2563eb', overflow: 'hidden', transform: [{ translateY: 4 }, { scale: 1.08 }] },
+  userName: { fontSize: 16, fontWeight: 'bold', color: '#1b3a6b' },
+  userBadgeText: { fontSize: 12, fontWeight: '600', color: '#16a34a' },
   headerSubCaption: { color: '#64748b', fontSize: 13, marginBottom: 16 },
 
   profileCard: {

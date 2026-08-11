@@ -4,12 +4,13 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  SafeAreaView,
   Platform,
   StatusBar,
+  BackHandler,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'lucide-react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 // Import Shared Data Layer & All 16 Dhan Marg Subcomponents
 import {
@@ -65,7 +66,7 @@ export default function MargScreen() {
   const [selectedAccount, setSelectedAccount] = useState<string>('HDFC Securities');
 
   // Back Button Navigation Logic
-  const handleBack = () => {
+  const handleBack = React.useCallback(() => {
     switch (step) {
       case '02_PROFILE':
         setStep('01_HOME');
@@ -115,7 +116,23 @@ export default function MargScreen() {
       default:
         setStep('01_HOME');
     }
-  };
+  }, [step]);
+
+  // Hardware Back Button Handler for Android
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (step !== '01_HOME') {
+          handleBack();
+          return true;
+        }
+        return false;
+      };
+
+      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () => subscription.remove();
+    }, [step, handleBack])
+  );
 
   // Cross-Tab Navigation Handlers
   const handleNavigateToGyaan = (topicId: string) => {
@@ -174,7 +191,8 @@ export default function MargScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['left', 'right']}>
+      <StatusBar barStyle="light-content" backgroundColor="#1b3a6b" />
       <View style={styles.container}>
         {/* Navigation Header for Sub-screens */}
         {step !== '01_HOME' && (
@@ -360,7 +378,7 @@ export default function MargScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#ffffff' },
+  safeArea: { flex: 1, backgroundColor: '#1b3a6b' },
   container: { flex: 1, backgroundColor: '#f8fafc' },
 
   header: {

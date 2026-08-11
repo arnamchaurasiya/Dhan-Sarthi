@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, StatusBar } from 'react-native';
+import { View, StyleSheet, StatusBar, BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 import {
   INITIAL_USER_STATS,
@@ -35,8 +35,10 @@ export type GyaanViewMode =
 export default function GyaanScreen() {
   const navigation = useNavigation<any>();
 
-  // Navigation / Screen View Mode State
-  const [viewMode, setViewMode] = useState<GyaanViewMode>('home');
+  // Stack-based view history for proper back navigation
+  const [viewHistory, setViewHistory] = useState<GyaanViewMode[]>(['home']);
+  const currentViewMode = viewHistory[viewHistory.length - 1] || 'home';
+
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('reits_invits');
   const [selectedTopicId, setSelectedTopicId] = useState<string>('what_is_reit');
   const [selectedQuizId, setSelectedQuizId] = useState<string>('quiz_reit_1');
@@ -58,41 +60,37 @@ export default function GyaanScreen() {
     if (params?.productId) setSelectedProduct(params.productId);
     if (params?.simTab) setSimulatorInitialTab(params.simTab);
 
-    switch (screen) {
-      case 'home':
-        setViewMode('home');
-        break;
-      case 'categories':
-        setViewMode('categories');
-        break;
-      case 'topicList':
-        setViewMode('topicList');
-        break;
-      case 'lesson':
-        setViewMode('lesson');
-        break;
-      case 'quiz':
-        setViewMode('quiz');
-        break;
-      case 'tutor':
-        setViewMode('tutor');
-        break;
-      case 'simulators':
-        setViewMode('simulators');
-        break;
-      case 'journey':
-        setViewMode('journey');
-        break;
-      case 'bookmarks':
-        setViewMode('bookmarks');
-        break;
-      case 'readiness':
-        setViewMode('readiness');
-        break;
-      default:
-        setViewMode('home');
+    const targetMode = (screen === 'default' ? 'home' : screen) as GyaanViewMode;
+    if (targetMode === 'home') {
+      setViewHistory(['home']);
+    } else {
+      setViewHistory((prev) => [...prev, targetMode]);
     }
   };
+
+  const handleGoBack = React.useCallback(() => {
+    if (viewHistory.length > 1) {
+      setViewHistory((prev) => prev.slice(0, prev.length - 1));
+      return true;
+    }
+    return false;
+  }, [viewHistory]);
+
+  // Hardware Back Button Handler for Android
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (viewHistory.length > 1) {
+          handleGoBack();
+          return true;
+        }
+        return false;
+      };
+
+      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () => subscription.remove();
+    }, [viewHistory, handleGoBack])
+  );
 
   // Toggle Bookmark
   const handleBookmarkToggle = (topicId: string) => {
@@ -141,7 +139,7 @@ export default function GyaanScreen() {
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <StatusBar barStyle="light-content" backgroundColor="#1b3a6b" />
       <View style={styles.container}>
-        {viewMode === 'home' && (
+        {currentViewMode === 'home' && (
           <GyaanHome
             stats={userStats}
             onNavigate={handleNavigate}
@@ -150,108 +148,108 @@ export default function GyaanScreen() {
           />
         )}
 
-        {viewMode === 'categories' && (
+        {currentViewMode === 'categories' && (
           <LearnByCategory
-            onBack={() => setViewMode('home')}
+            onBack={handleGoBack}
             onSelectCategory={(catId) => {
               setSelectedCategoryId(catId);
-              setViewMode('topicList');
+              handleNavigate('topicList');
             }}
             initialSearchQuery={searchQuery}
           />
         )}
 
-        {viewMode === 'topicList' && (
+        {currentViewMode === 'topicList' && (
           <TopicListScreen
             categoryId={selectedCategoryId}
-            onBack={() => setViewMode('categories')}
+            onBack={handleGoBack}
             onSelectTopic={(tId) => {
               setSelectedTopicId(tId);
-              setViewMode('lesson');
+              handleNavigate('lesson');
             }}
           />
         )}
 
-        {viewMode === 'lesson' && (
+        {currentViewMode === 'lesson' && (
           <LessonContentScreen
             topicId={selectedTopicId}
-            onBack={() => setViewMode('topicList')}
+            onBack={handleGoBack}
             onStartQuiz={(qId) => {
               setSelectedQuizId(qId);
-              setViewMode('quiz');
+              handleNavigate('quiz');
             }}
             onBookmarkToggle={handleBookmarkToggle}
             isBookmarked={!!bookmarks.find((b) => b.topicId === selectedTopicId)}
           />
         )}
 
-        {viewMode === 'quiz' && (
+        {currentViewMode === 'quiz' && (
           <QuizScreen
             quizId={selectedQuizId}
-            onBack={() => setViewMode('lesson')}
+            onBack={handleGoBack}
             onQuizComplete={handleQuizComplete}
             onNavigateToSimulator={() => {
               setSimulatorInitialTab('reit');
-              setViewMode('simulators');
+              handleNavigate('simulators');
             }}
             onNavigateToReadiness={() => {
               setSelectedProduct('reit');
-              setViewMode('readiness');
+              handleNavigate('readiness');
             }}
           />
         )}
 
-        {viewMode === 'tutor' && (
+        {currentViewMode === 'tutor' && (
           <AITutorScreen
-            onBack={() => setViewMode('home')}
+            onBack={handleGoBack}
             onNavigateToTopic={(tId) => {
               setSelectedTopicId(tId);
-              setViewMode('lesson');
+              handleNavigate('lesson');
             }}
           />
         )}
 
-        {viewMode === 'simulators' && (
+        {currentViewMode === 'simulators' && (
           <FinancialSimulatorsScreen
-            onBack={() => setViewMode('home')}
+            onBack={handleGoBack}
             initialTab={simulatorInitialTab}
             onNavigateToReadiness={() => {
               setSelectedProduct('reit');
-              setViewMode('readiness');
+              handleNavigate('readiness');
             }}
           />
         )}
 
-        {viewMode === 'journey' && (
+        {currentViewMode === 'journey' && (
           <LearningJourneyScreen
-            onBack={() => setViewMode('home')}
+            onBack={handleGoBack}
             onNavigateToTopic={(tId) => {
               setSelectedTopicId(tId);
-              setViewMode('lesson');
+              handleNavigate('lesson');
             }}
           />
         )}
 
-        {viewMode === 'bookmarks' && (
+        {currentViewMode === 'bookmarks' && (
           <BookmarksScreen
             bookmarks={bookmarks}
-            onBack={() => setViewMode('home')}
+            onBack={handleGoBack}
             onNavigateToTopic={(tId) => {
               setSelectedTopicId(tId);
-              setViewMode('lesson');
+              handleNavigate('lesson');
             }}
             onUpdateNote={handleUpdateNote}
             onRemoveBookmark={handleRemoveBookmark}
           />
         )}
 
-        {viewMode === 'readiness' && (
+        {currentViewMode === 'readiness' && (
           <BeforeYouInvestScreen
             initialProduct={selectedProduct}
-            onBack={() => setViewMode('home')}
+            onBack={handleGoBack}
             onNavigateToTopic={(tId) => {
               setSelectedTopicId(tId);
-              setViewMode('lesson');
+              handleNavigate('lesson');
             }}
             onProceedToMarg={handleProceedToMarg}
           />

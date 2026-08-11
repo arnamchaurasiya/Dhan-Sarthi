@@ -4,7 +4,7 @@ import {
   Platform, StatusBar, Dimensions,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { ArrowLeft, ChevronRight } from 'lucide-react-native';
+import { ArrowLeft } from 'lucide-react-native';
 import Svg, { Path, Circle, G } from 'react-native-svg';
 import { DEFAULT_HOLDINGS, getAssetBreakdown, TARGET_CATEGORIES, mapAssetCategory } from './darpanData';
 
@@ -169,15 +169,7 @@ export default function AssetAllocation() {
           </View>
         )}
 
-        {/* CTA to risk screen */}
-        <TouchableOpacity
-          style={styles.riskCta}
-          onPress={() => navigation.navigate('RiskExposure', { holdings })}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.riskCtaText}>View Risk & Exposure Analysis</Text>
-          <ChevronRight color="#fff" size={18} />
-        </TouchableOpacity>
+
       </ScrollView>
     </View>
   );
@@ -237,9 +229,4 @@ const styles = StyleSheet.create({
   holdingMiniVal: { color: '#1b3a6b', fontSize: 13, fontWeight: 'bold' },
   holdingMiniWt: { color: '#94a3b8', fontSize: 11, marginTop: 2 },
 
-  riskCta: {
-    backgroundColor: '#1b3a6b', borderRadius: 14, paddingVertical: 16,
-    paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-  },
-  riskCtaText: { color: '#fff', fontSize: 15, fontWeight: 'bold' },
 });

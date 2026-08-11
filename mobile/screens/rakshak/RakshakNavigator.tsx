@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, StyleSheet, Alert, BackHandler } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 import RakshakHome from './RakshakHome';
 import SafetyDashboard from './SafetyDashboard';
@@ -76,6 +76,58 @@ export default function RakshakNavigator() {
 
     setCurrentScreen(screen as RakshakScreenState);
   };
+
+  const handleRakshakBack = React.useCallback(() => {
+    switch (currentScreen) {
+      case 'safety_dashboard':
+      case 'entity_search':
+      case 'content_scanner':
+      case 'regulatory_select':
+      case 'portfolio_risk_alert':
+      case 'investment_warning':
+      case 'alert_center':
+      case 'safety_education':
+        setCurrentScreen('home');
+        return true;
+      case 'entity_result':
+      case 'unverified_result':
+        setCurrentScreen('entity_search');
+        return true;
+      case 'content_scan_result':
+        setCurrentScreen('content_scanner');
+        return true;
+      case 'regulatory_result':
+        setCurrentScreen('regulatory_select');
+        return true;
+      case 'risk_alert_details':
+        setCurrentScreen('portfolio_risk_alert');
+        return true;
+      case 'safety_check':
+        setCurrentScreen('investment_warning');
+        return true;
+      case 'alert_resolution':
+        setCurrentScreen('alert_center');
+        return true;
+      default:
+        return false;
+    }
+  }, [currentScreen]);
+
+  // Hardware Back Button Handler for Android
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (currentScreen !== 'home') {
+          handleRakshakBack();
+          return true;
+        }
+        return false;
+      };
+
+      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () => subscription.remove();
+    }, [currentScreen, handleRakshakBack])
+  );
 
   // Entity selection logic (Search -> Result or Unverified)
   const handleSelectEntityByQuery = (query: string) => {

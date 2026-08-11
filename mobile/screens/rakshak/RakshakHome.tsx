@@ -5,6 +5,9 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Platform,
+  StatusBar,
+  Image,
 } from 'react-native';
 import {
   ShieldCheck,
@@ -27,27 +30,33 @@ interface RakshakHomeProps {
 export default function RakshakHome({ onNavigate }: RakshakHomeProps) {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Top Header Banner */}
-      <View style={styles.headerCard}>
-        <View style={styles.headerRow}>
-          <View style={styles.headerIconBg}>
-            <ShieldCheck color="#1b3a6b" size={28} />
+      {/* Top Hero Header Banner */}
+      <View style={styles.heroCard}>
+        <View style={styles.heroTopRow}>
+          <View style={{ flex: 1, marginRight: 12 }}>
+            <Text style={styles.heroTitle}>Dhan Rakshak</Text>
+            <Text style={styles.heroSub}>
+              Trust & Safety Layer • Active SEBI-aligned risk & scam monitoring
+            </Text>
           </View>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.headerTitle}>Dhan Rakshak</Text>
-            <Text style={styles.headerSubtitle}>Your Trust & Safety Layer</Text>
+
+          <View style={styles.headerRightActions}>
+            <TouchableOpacity style={styles.bellBtn} onPress={() => onNavigate('alert_center')} activeOpacity={0.8}>
+              <Bell color="#ffffff" size={18} />
+              <View style={styles.bellBadge} />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.userProfileAvatarOnlyBtn} activeOpacity={0.8}>
+              <Image source={require('../../assets/passport size photo.jpg')} style={styles.userProfileAvatarOnlyImg} />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.bellBtn} onPress={() => onNavigate('alert_center')}>
-            <Bell color="#1b3a6b" size={20} />
-            <View style={styles.bellBadge} />
-          </TouchableOpacity>
         </View>
 
         {/* Protection Status Badge */}
         <View style={styles.protectedBadgeContainer}>
           <View style={styles.protectedRow}>
             <View style={styles.shieldPulseIcon}>
-              <ShieldCheck color="#ffffff" size={20} />
+              <ShieldCheck color="#ffffff" size={18} />
             </View>
             <View style={{ flex: 1, marginLeft: 10 }}>
               <Text style={styles.protectedTitle}>🛡️ You're protected</Text>
@@ -200,93 +209,114 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f8fafc',
   },
-  headerCard: {
-    backgroundColor: '#ffffff',
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
+  heroCard: {
+    backgroundColor: '#1b3a6b',
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 24) + 12 : 16,
+    paddingBottom: 22,
+    borderBottomRightRadius: 28,
+    borderBottomLeftRadius: 28,
+    shadowColor: '#1b3a6b',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 5,
   },
-  headerRow: {
+  heroTopRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  heroBadgeRow: { flexDirection: 'row', alignItems: 'center', flex: 1, marginRight: 8 },
+  badgePill: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
   },
-  headerIconBg: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#eff6ff',
+  heroBadgeText: { color: '#ffffff', fontSize: 10, fontWeight: 'bold', marginLeft: 4 },
+  heroBadgeSub: { color: '#bfdbfe', fontSize: 12, fontWeight: '600', marginLeft: 6 },
+  headerRightActions: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  headerTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#0f172a',
-  },
-  headerSubtitle: {
-    fontSize: 13,
-    color: '#64748b',
+    gap: 10,
   },
   bellBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: '#f1f5f9',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
   },
   bellBadge: {
     position: 'absolute',
-    top: 8,
-    right: 9,
+    top: 7,
+    right: 8,
     width: 8,
     height: 8,
     borderRadius: 4,
     backgroundColor: '#ef4444',
+    borderWidth: 1.5,
+    borderColor: '#1b3a6b',
   },
+  userProfileAvatarOnlyBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.85)',
+    overflow: 'hidden',
+    backgroundColor: '#ffffff',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  userProfileAvatarOnlyImg: { width: 36, height: 36, borderRadius: 18, transform: [{ translateY: 3 }, { scale: 1.08 }] },
+  heroTitle: { color: '#ffffff', fontSize: 24, fontWeight: 'bold' },
+  heroSub: { color: '#cbd5e1', fontSize: 13, marginTop: 4, lineHeight: 18 },
   protectedBadgeContainer: {
-    backgroundColor: '#1b3a6b',
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
     borderRadius: 14,
-    padding: 14,
-    marginBottom: 0,
+    padding: 12,
+    marginTop: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.18)',
   },
   protectedRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   shieldPulseIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: '#2563eb',
     alignItems: 'center',
     justifyContent: 'center',
   },
   protectedTitle: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#ffffff',
   },
   protectedSub: {
     fontSize: 11,
-    color: '#93c5fd',
+    color: '#bfdbfe',
     marginTop: 1,
   },
   overviewLinkBtn: {
     backgroundColor: '#ffffff',
     paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingVertical: 5,
     borderRadius: 8,
     flexDirection: 'row',
     alignItems: 'center',
   },
   overviewLinkText: {
-    fontSize: 12,
+    fontSize: 11.5,
     fontWeight: '600',
     color: '#2563eb',
     marginRight: 2,

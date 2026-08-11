@@ -64,13 +64,10 @@ export default function GyaanHome({
         <View style={styles.headerTop}>
           <View style={{ flex: 1, marginRight: 8 }}>
             <View style={styles.brandRow}>
-              <View style={styles.logoBadge}>
-                <BookOpen size={18} color="#ffffff" />
-              </View>
-              <Text style={styles.brandTitle}>Dhan Gyaan</Text>
+              <Text style={styles.brandTitle}>Financial Hub</Text>
             </View>
             <Text style={styles.brandSubtitle}>
-              Learn • Understand • Practice • Verify • Invest Ready
+              Learn • Understand • Verify • Invest
             </Text>
           </View>
           <TouchableOpacity
@@ -125,7 +122,6 @@ export default function GyaanHome({
       {/* Recommended Next Action — Continue Learning Loop */}
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Continue Learning</Text>
-        <Text style={styles.sectionSub}>Pick up right where you left off</Text>
       </View>
 
       <TouchableOpacity

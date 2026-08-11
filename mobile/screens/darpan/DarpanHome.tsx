@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  Dimensions, Platform, StatusBar,
+  Dimensions, Platform, StatusBar, Image,
 } from 'react-native';
 import Svg, { Path, Defs, LinearGradient, Stop, Circle, Rect, G, Line } from 'react-native-svg';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -84,21 +84,14 @@ export default function DarpanHome() {
       {/* ── HERO HEADER ── */}
       <View style={styles.hero}>
         <View style={styles.heroTop}>
-          <View style={styles.heroBadgeRow}>
-            <View style={styles.sebiPill}>
-              <ShieldCheck color="#fff" size={11} />
-              <Text style={styles.sebiPillText}>SEBI DPI</Text>
-            </View>
-            <Text style={styles.darpanLabel}> • Dhan Darpan</Text>
+          <View style={{ flex: 1, marginRight: 12 }}>
+            <Text style={styles.heroTitle}>Portfolio Mirror</Text>
+            <Text style={styles.heroSub}>Unified view across NSDL, CDSL & CAMS</Text>
           </View>
-          <TouchableOpacity style={styles.profileBtn} onPress={() => setProfileVisible(true)}>
-            <View style={styles.avatarCircle}><User color="#1b3a6b" size={13} /></View>
-            <Text style={styles.profileName}>Arnam</Text>
-            <ChevronRight color="rgba(255,255,255,0.7)" size={12} />
+          <TouchableOpacity style={styles.profileAvatarOnlyBtn} onPress={() => setProfileVisible(true)} activeOpacity={0.8}>
+            <Image source={require('../../assets/passport size photo.jpg')} style={styles.profileAvatarOnlyImg} />
           </TouchableOpacity>
         </View>
-        <Text style={styles.heroTitle}>Portfolio Mirror</Text>
-        <Text style={styles.heroSub}>Unified view across NSDL, CDSL & CAMS via AA</Text>
       </View>
 
       <View style={styles.content}>
@@ -134,7 +127,7 @@ export default function DarpanHome() {
               <Text style={styles.metaLabel}>Total Returns</Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 }}>
                 <TrendingUp color="#16a34a" size={12} />
-                <Text style={[styles.metaVal, { color: '#16a34a' }]}>
+                <Text style={[styles.metaVal, { color: '#16a34a' }]} numberOfLines={1} adjustsFontSizeToFit>
                   +₹{Math.round(totalReturns).toLocaleString('en-IN')} ({returnPct.toFixed(1)}%)
                 </Text>
               </View>
@@ -323,7 +316,9 @@ export default function DarpanHome() {
         <Pressable style={styles.overlay} onPress={() => setProfileVisible(false)}>
           <View style={styles.modal}>
             <View style={styles.modalHead}>
-              <View style={styles.modalAvatar}><User color="#1b3a6b" size={22} /></View>
+              <View style={styles.modalAvatar}>
+                <Image source={require('../../assets/passport size photo.jpg')} style={styles.modalAvatarImg} />
+              </View>
               <View style={{ marginLeft: 12 }}>
                 <Text style={styles.modalName}>Arnam Chaurasiya</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 3 }}>
@@ -378,14 +373,23 @@ const styles = StyleSheet.create({
     elevation: 5,
     shadowColor: '#1b3a6b', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.2, shadowRadius: 10,
   },
-  heroTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },
+  heroTop: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
   heroBadgeRow: { flexDirection: 'row', alignItems: 'center' },
   sebiPill: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.18)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
   sebiPillText: { color: '#fff', fontSize: 10, fontWeight: 'bold', marginLeft: 4 },
   darpanLabel: { color: '#bfdbfe', fontSize: 12, fontWeight: '600', marginLeft: 6 },
-  profileBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.15)', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)' },
-  avatarCircle: { width: 22, height: 22, borderRadius: 11, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', marginRight: 6 },
-  profileName: { color: '#fff', fontSize: 12, fontWeight: '600' },
+  profileAvatarOnlyBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.85)',
+    overflow: 'hidden',
+    backgroundColor: '#ffffff',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  profileAvatarOnlyImg: { width: 36, height: 36, borderRadius: 18, transform: [{ translateY: 3 }, { scale: 1.08 }] },
   heroTitle: { color: '#fff', fontSize: 24, fontWeight: 'bold' },
   heroSub: { color: '#cbd5e1', fontSize: 13, marginTop: 4 },
 
@@ -408,9 +412,24 @@ const styles = StyleSheet.create({
   aaChip: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f0fdf4', borderColor: '#bbf7d0', borderWidth: 1, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 12 },
   aaChipText: { color: '#16a34a', fontSize: 11, fontWeight: '700', marginLeft: 4 },
 
-  heroAmountRow: { flexDirection: 'row', alignItems: 'baseline', flexWrap: 'wrap', gap: 10, marginBottom: 14 },
-  valueBig: { color: '#0f172a', fontSize: 30, fontWeight: 'bold' },
-  gainBadge: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8, gap: 3 },
+  heroAmountRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    columnGap: 10,
+    rowGap: 6,
+    marginBottom: 14,
+  },
+  valueBig: { color: '#0f172a', fontSize: 28, fontWeight: 'bold' },
+  gainBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    gap: 3,
+  },
   gainText: { fontSize: 12, fontWeight: '700' },
   gainPeriod: { color: '#64748b', fontSize: 11, fontWeight: '500', marginLeft: 2 },
 
@@ -487,7 +506,8 @@ const styles = StyleSheet.create({
   overlay: { flex: 1, backgroundColor: 'rgba(15,23,42,0.6)', justifyContent: 'flex-end' },
   modal: { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24 },
   modalHead: { flexDirection: 'row', alignItems: 'center', marginBottom: 16, paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
-  modalAvatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#ebf3fa', alignItems: 'center', justifyContent: 'center' },
+  modalAvatar: { width: 50, height: 50, borderRadius: 25, backgroundColor: '#ebf3fa', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderWidth: 2, borderColor: '#2563eb' },
+  modalAvatarImg: { width: 50, height: 50, borderRadius: 25, transform: [{ translateY: 4 }, { scale: 1.08 }] },
   modalName: { color: '#1b3a6b', fontSize: 18, fontWeight: 'bold' },
   modalVerified: { color: '#16a34a', fontSize: 11, fontWeight: '600' },
   profileRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#f8fafc' },
