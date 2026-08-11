@@ -91,17 +91,64 @@ function WebContainer({ children }: { children: React.ReactNode }) {
     return <View style={{ flex: 1 }}>{children}</View>;
   }
 
+  const handleDownloadApk = () => {
+    if (typeof window !== 'undefined') {
+      window.open('https://github.com/arnamchaurasiya/Dhan-Sarthi/releases', '_blank');
+    }
+  };
+
+  const handleOpenGithub = () => {
+    if (typeof window !== 'undefined') {
+      window.open('https://github.com/arnamchaurasiya/Dhan-Sarthi', '_blank');
+    }
+  };
+
   return (
     <View style={[styles.webOuterContainer, { minHeight: height }]}>
+      {/* Top Banner Header for Judges */}
       <View style={styles.webHeader}>
-        <Text style={styles.webHeaderTitle}>📱 Dhan-Sarthi Mobile App</Text>
-        <Text style={styles.webHeaderSubtitle}>SEBI Securities Market TechSprint — Prototype Preview</Text>
+        <View style={styles.sebiTechSprintBadge}>
+          <Text style={styles.sebiTechSprintText}>SEBI SECURITIES MARKET TECHSPRINT</Text>
+        </View>
+        <Text style={styles.webHeaderTitle}>📱 Dhan-Sarthi Android App Simulator</Text>
+        <Text style={styles.webHeaderSubtitle}>
+          Interactive Mobile Prototype — Test features live below or download the native Android APK
+        </Text>
+
+        {/* Action Buttons for Judges */}
+        <View style={styles.actionRow}>
+          <TouchableOpacity style={styles.downloadApkBtn} onPress={handleDownloadApk} activeOpacity={0.85}>
+            <Text style={styles.downloadApkText}>⬇️ Download Android APK (.apk)</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.githubBtn} onPress={handleOpenGithub} activeOpacity={0.85}>
+            <Text style={styles.githubBtnText}>⭐ View GitHub Repository</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
+      {/* Android Device Shell */}
       <View style={styles.phoneFrame}>
-        <View style={styles.phoneNotch} />
+        {/* Android Punch Hole Camera */}
+        <View style={styles.cameraPunchHole} />
+
+        {/* Android Top Status Bar */}
+        <View style={styles.androidStatusBar}>
+          <Text style={styles.statusTime}>09:41</Text>
+          <View style={styles.statusIcons}>
+            <Text style={styles.statusIconText}>5G</Text>
+            <Text style={styles.statusIconText}>📶</Text>
+            <Text style={styles.statusIconText}>🔋 98%</Text>
+          </View>
+        </View>
+
+        {/* Live App Screen */}
         <View style={{ flex: 1, width: '100%', overflow: 'hidden' }}>
           {children}
+        </View>
+
+        {/* Android Bottom Navigation Bar */}
+        <View style={styles.androidBottomBar}>
+          <View style={styles.gesturePill} />
         </View>
       </View>
     </View>
@@ -128,48 +175,137 @@ export default function App() {
 const styles = StyleSheet.create({
   webOuterContainer: {
     flex: 1,
-    backgroundColor: '#0b0f19',
+    backgroundColor: '#070a12',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 24,
   },
   webHeader: {
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
+    paddingHorizontal: 16,
+  },
+  sebiTechSprintBadge: {
+    backgroundColor: '#1b3a6b',
+    paddingHorizontal: 14,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginBottom: 8,
+  },
+  sebiTechSprintText: {
+    color: '#60a5fa',
+    fontSize: 11,
+    fontWeight: 'bold',
+    letterSpacing: 1.2,
   },
   webHeaderTitle: {
     color: '#ffffff',
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
     letterSpacing: 0.5,
   },
   webHeaderSubtitle: {
     color: '#94a3b8',
-    fontSize: 14,
+    fontSize: 13,
     marginTop: 4,
+    textAlign: 'center',
+  },
+  actionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginTop: 14,
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  downloadApkBtn: {
+    backgroundColor: '#16a34a',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 10,
+    shadowColor: '#16a34a',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  downloadApkText: {
+    color: '#ffffff',
+    fontSize: 13,
+    fontWeight: 'bold',
+  },
+  githubBtn: {
+    backgroundColor: '#1e293b',
+    borderColor: '#334155',
+    borderWidth: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 10,
+  },
+  githubBtnText: {
+    color: '#e2e8f0',
+    fontSize: 13,
+    fontWeight: 'bold',
   },
   phoneFrame: {
     width: 410,
-    height: 820,
+    height: 830,
     backgroundColor: '#ffffff',
-    borderRadius: 40,
-    borderWidth: 10,
+    borderRadius: 44,
+    borderWidth: 12,
     borderColor: '#1e293b',
     overflow: 'hidden',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 20 },
-    shadowOpacity: 0.5,
-    shadowRadius: 30,
-    elevation: 25,
+    shadowOffset: { width: 0, height: 25 },
+    shadowOpacity: 0.6,
+    shadowRadius: 35,
+    elevation: 30,
+    position: 'relative',
   },
-  phoneNotch: {
-    width: 130,
-    height: 24,
-    backgroundColor: '#1e293b',
+  cameraPunchHole: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: '#0f172a',
+    position: 'absolute',
+    top: 10,
     alignSelf: 'center',
-    borderBottomLeftRadius: 16,
-    borderBottomRightRadius: 16,
-    zIndex: 999,
+    zIndex: 9999,
+  },
+  androidStatusBar: {
+    height: 32,
+    backgroundColor: '#1b3a6b',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 18,
+    zIndex: 9998,
+  },
+  statusTime: {
+    color: '#ffffff',
+    fontSize: 11,
+    fontWeight: 'bold',
+  },
+  statusIcons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  statusIconText: {
+    color: '#ffffff',
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  androidBottomBar: {
+    height: 16,
+    backgroundColor: '#0f172a',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  gesturePill: {
+    width: 120,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#475569',
   },
 });
 
