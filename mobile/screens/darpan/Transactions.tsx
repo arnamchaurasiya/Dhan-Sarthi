@@ -1,22 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
   Platform, StatusBar,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { ArrowLeft, ChevronRight } from 'lucide-react-native';
-import { DEFAULT_TRANSACTIONS, TX_TYPE_COLORS, Transaction } from './darpanData';
+import { TX_TYPE_COLORS, Transaction } from './darpanData';
+import { portfolioStore } from '../../services/portfolioStore';
 
 const FILTERS = ['All', 'BUY', 'SELL', 'DIVIDEND', 'INTEREST', 'SIP'];
 
 export default function Transactions() {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
+  const [txns, setTxns] = useState<Transaction[]>(portfolioStore.getTransactions());
   const [activeFilter, setActiveFilter] = useState(route.params?.initialFilter || 'All');
 
+  useEffect(() => {
+    const unsubscribe = portfolioStore.subscribe(() => {
+      setTxns([...portfolioStore.getTransactions()]);
+    });
+    return unsubscribe;
+  }, []);
+
   const filtered: Transaction[] = activeFilter === 'All'
-    ? DEFAULT_TRANSACTIONS
-    : DEFAULT_TRANSACTIONS.filter(t => t.type === activeFilter);
+    ? txns
+    : txns.filter(t => t.type === activeFilter);
 
   // Group by month
   const byMonth: Record<string, Transaction[]> = {};
@@ -25,8 +34,8 @@ export default function Transactions() {
     byMonth[tx.month].push(tx);
   });
 
-  const totalBuys = DEFAULT_TRANSACTIONS.filter(t => t.type === 'BUY' || t.type === 'SIP').reduce((a, t) => a + t.amount, 0);
-  const totalDivs = DEFAULT_TRANSACTIONS.filter(t => t.type === 'DIVIDEND' || t.type === 'INTEREST').reduce((a, t) => a + t.amount, 0);
+  const totalBuys = txns.filter(t => t.type === 'BUY' || t.type === 'SIP').reduce((a, t) => a + t.amount, 0);
+  const totalDivs = txns.filter(t => t.type === 'DIVIDEND' || t.type === 'INTEREST').reduce((a, t) => a + t.amount, 0);
 
   return (
     <View style={styles.root}>

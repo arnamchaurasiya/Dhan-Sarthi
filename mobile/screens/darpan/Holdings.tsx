@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
   Platform, StatusBar,
@@ -10,15 +10,23 @@ import {
 } from 'lucide-react-native';
 import Svg, { Path } from 'react-native-svg';
 
-import { DEFAULT_HOLDINGS, mapAssetCategory, Holding } from './darpanData';
+import { mapAssetCategory, Holding } from './darpanData';
+import { portfolioStore } from '../../services/portfolioStore';
 
 const FILTER_CATS = ['All', 'Equity', 'Mutual Funds', 'REIT', 'InvIT', 'Bonds', 'Other'];
 
 export default function Holdings() {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
-  const holdings: Holding[] = route.params?.holdings || DEFAULT_HOLDINGS;
+  const [holdings, setHoldings] = useState<Holding[]>(portfolioStore.getHoldings());
   const [selectedCat, setSelectedCat] = useState(route.params?.initialCategory || 'All');
+
+  useEffect(() => {
+    const unsubscribe = portfolioStore.subscribe(() => {
+      setHoldings([...portfolioStore.getHoldings()]);
+    });
+    return unsubscribe;
+  }, []);
 
   const filtered = selectedCat === 'All'
     ? holdings

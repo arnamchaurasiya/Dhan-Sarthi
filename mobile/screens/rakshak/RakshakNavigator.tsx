@@ -132,7 +132,18 @@ export default function RakshakNavigator() {
   // Entity selection logic (Search -> Result or Unverified)
   const handleSelectEntityByQuery = (query: string) => {
     const lower = query.toLowerCase();
-    if (lower.includes('wealth') || lower.includes('unverified') || lower.includes('fake')) {
+    const isUnverified = 
+      lower.includes('wealth') || 
+      lower.includes('unverified') || 
+      lower.includes('fake') || 
+      lower.includes('crypto') || 
+      lower.includes('tips') || 
+      lower.includes('telegram') || 
+      lower.includes('guaranteed') || 
+      lower.includes('scheme') ||
+      lower.includes('scam');
+
+    if (isUnverified) {
       setUnverifiedName(query);
       setCurrentScreen('unverified_result');
     } else if (lower.includes('zerodha')) {
@@ -146,8 +157,13 @@ export default function RakshakNavigator() {
       setCurrentScreen('entity_result');
     } else {
       setSelectedEntity({
-        ...INITIAL_VERIFIED_ENTITIES.abc_investment,
         name: query,
+        category: 'SEBI Registered Intermediary',
+        sebiRegNo: `INZ${Math.floor(100000000 + Math.random() * 900000000)}`,
+        status: 'Active',
+        validTill: '31-Dec-2028',
+        scoresStatus: 'Clean (0 Complaints Pending)',
+        riskScore: 'Low Risk (98/100)',
       });
       setCurrentScreen('entity_result');
     }

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Check, Building2, Download, PieChart, ArrowRight } from 'lucide-react-native';
 import { Product } from './margData';
+import { portfolioStore } from '../../services/portfolioStore';
 
 interface Props {
   product: Product;
@@ -15,6 +16,19 @@ export default function InvestmentConfirmationScreen({
   onNavigateToDarpan,
 }: Props) {
   const unitsApprox = Math.max(1, Math.floor(amount / 138.5));
+
+  useEffect(() => {
+    portfolioStore.buyAsset({
+      symbol: product.id ? product.id.toUpperCase() : 'NEWSTOCK',
+      name: product.name,
+      price: product.price || 138.5,
+      units: unitsApprox,
+      amount: amount,
+      asset_class: product.type || 'Equity',
+      broker: 'Dhan Sarthi (Direct)',
+      sector: 'Diversified',
+    });
+  }, []);
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>

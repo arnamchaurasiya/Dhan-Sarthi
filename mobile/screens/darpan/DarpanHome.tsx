@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
   Dimensions, Platform, StatusBar, Image,
@@ -13,17 +13,39 @@ import {
 import { Modal, Pressable } from 'react-native';
 
 import {
-  CHART_DATA_BY_TIMEFRAME, TIME_HORIZONS, getAssetBreakdown,
-  DEFAULT_HOLDINGS, CONNECTED_ACCOUNTS,
+  CHART_DATA_BY_TIMEFRAME, TIME_HORIZONS, CONNECTED_ACCOUNTS,
 } from './darpanData';
+import { portfolioStore } from '../../services/portfolioStore';
 
 const { width: SW } = Dimensions.get('window');
 
 export default function DarpanHome() {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
-  const holdings = route.params?.holdings || DEFAULT_HOLDINGS;
-  const summary = route.params?.summary || {};
+
+  const [storeState, setStoreState] = useState({
+    holdings: portfolioStore.getHoldings(),
+    transactions: portfolioStore.getTransactions(),
+    summary: portfolioStore.getSummary(),
+    assetBreakdown: portfolioStore.getAssetBreakdown(),
+  });
+
+  useEffect(() => {
+    const unsubscribe = portfolioStore.subscribe(() => {
+      setStoreState({
+        holdings: portfolioStore.getHoldings(),
+        transactions: portfolioStore.getTransactions(),
+        summary: portfolioStore.getSummary(),
+        assetBreakdown: portfolioStore.getAssetBreakdown(),
+      });
+    });
+    return unsubscribe;
+  }, []);
+
+  const holdings = storeState.holdings;
+  const transactions = storeState.transactions;
+  const summary = storeState.summary;
+  const assetBreakdown = storeState.assetBreakdown;
 
   const [selectedHorizon, setSelectedHorizon] = useState('1D');
   const [activePointIdx, setActivePointIdx] = useState(5);
@@ -57,7 +79,6 @@ export default function DarpanHome() {
     setActivePointIdx(Math.round(ratio * (chartPoints.length - 1)));
   };
 
-  const assetBreakdown = getAssetBreakdown(holdings);
   const totalValue = summary.totalValue || 793450;
   const totalInvested = summary.totalInvested || 650000;
   const totalReturns = summary.totalReturns || 143450;
@@ -258,18 +279,14 @@ export default function DarpanHome() {
               <Text style={styles.seeAll}>See all →</Text>
             </TouchableOpacity>
           </View>
-          {[
-            { type: 'BUY', asset: 'TCS', date: 'Aug 08', amount: '₹20,000', color: '#16a34a' },
-            { type: 'BUY', asset: 'Nexus REIT', date: 'Aug 07', amount: '₹10,000', color: '#16a34a' },
-            { type: 'BUY', asset: 'InCred Bond', date: 'Aug 05', amount: '₹25,000', color: '#16a34a' },
-          ].map((tx, i) => (
-            <View key={i} style={styles.txRow}>
-              <View style={[styles.txBadge, { backgroundColor: tx.color + '15' }]}>
-                <Text style={[styles.txBadgeText, { color: tx.color }]}>{tx.type}</Text>
+          {transactions.slice(0, 4).map((tx, i) => (
+            <View key={tx.id || i} style={styles.txRow}>
+              <View style={[styles.txBadge, { backgroundColor: (tx.type === 'BUY' ? '#16a34a' : '#2563eb') + '15' }]}>
+                <Text style={[styles.txBadgeText, { color: tx.type === 'BUY' ? '#16a34a' : '#2563eb' }]}>{tx.type}</Text>
               </View>
-              <Text style={styles.txAsset}>{tx.asset}</Text>
+              <Text style={styles.txAsset} numberOfLines={1}>{tx.asset_name || tx.asset}</Text>
               <Text style={styles.txDate}>{tx.date}</Text>
-              <Text style={[styles.txAmount, { color: tx.color }]}>{tx.amount}</Text>
+              <Text style={[styles.txAmount, { color: '#16a34a' }]}>₹{tx.amount.toLocaleString('en-IN')}</Text>
             </View>
           ))}
         </View>

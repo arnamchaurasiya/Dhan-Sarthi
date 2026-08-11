@@ -13,14 +13,27 @@ export default function EkycScreen({ navigation }: any) {
   const [error, setError] = useState('');
 
   const handleVerify = async () => {
+    const cleanPan = pan.toUpperCase().trim();
+    const cleanAadhaar = aadhaar.replace(/\D/g, '');
+
+    if (cleanPan.length !== 10 || !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(cleanPan)) {
+      setError('Invalid PAN format (Must be 5 letters, 4 digits, 1 letter e.g. ABCDE1234F)');
+      return;
+    }
+
+    if (cleanAadhaar.length !== 12) {
+      setError('Invalid Aadhaar Number (Must be 12 digits)');
+      return;
+    }
+
     setLoading(true);
     setError('');
     try {
       const res = await axios.post(
         `${API_BASE}/api/v1/auth/ekyc`,
         {
-          pan_number: pan,
-          aadhaar_number: aadhaar
+          pan_number: cleanPan,
+          aadhaar_number: cleanAadhaar
         },
         { timeout: 3000 }
       );
@@ -32,7 +45,7 @@ export default function EkycScreen({ navigation }: any) {
         return;
       }
     } catch (err: any) {
-      if (pan && aadhaar) {
+      if (cleanPan && cleanAadhaar) {
         // Demo mode fallback
         setSuccess(true);
         setTimeout(() => {
@@ -40,7 +53,7 @@ export default function EkycScreen({ navigation }: any) {
         }, 1500);
         return;
       }
-      setError(err.response?.data?.detail || 'Verification failed. Please fill PAN & Aadhaar');
+      setError(err.response?.data?.detail || 'Verification failed. Please check your details');
     } finally {
       setLoading(false);
     }
@@ -68,22 +81,32 @@ export default function EkycScreen({ navigation }: any) {
           </View>
         ) : (
           <>
-            <Text style={styles.label}>PAN Card Number</Text>
+            <Text style={styles.label}>PAN Card Number (10 Characters)</Text>
             <TextInput 
               style={styles.input}
               value={pan}
-              onChangeText={setPan}
-              placeholder="Enter PAN"
+              maxLength={10}
+              onChangeText={(val) => {
+                setPan(val.toUpperCase());
+                if (error) setError('');
+              }}
+              placeholder="e.g. ABCDE1234F"
               placeholderTextColor="#94a3b8"
               autoCapitalize="characters"
             />
             
-            <Text style={styles.label}>Aadhaar Number</Text>
+            <Text style={styles.label}>Aadhaar Number (12 Digits)</Text>
             <TextInput 
               style={styles.input}
               value={aadhaar}
-              onChangeText={setAadhaar}
-              placeholder="Enter Aadhaar"
+              maxLength={14}
+              onChangeText={(val) => {
+                const digits = val.replace(/\D/g, '').slice(0, 12);
+                const formatted = digits.replace(/(\d{4})(?=\d)/g, '$1 ');
+                setAadhaar(formatted);
+                if (error) setError('');
+              }}
+              placeholder="e.g. 1234 5678 9012"
               placeholderTextColor="#94a3b8"
               keyboardType="number-pad"
             />

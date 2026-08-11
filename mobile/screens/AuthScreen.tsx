@@ -12,14 +12,27 @@ export default function AuthScreen({ navigation }: any) {
   const [error, setError] = useState('');
 
   const handleLogin = async () => {
+    const cleanPhone = phone.replace(/\D/g, '');
+    const cleanOtp = otp.replace(/\D/g, '');
+
+    if (cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone)) {
+      setError('Please enter a valid 10-digit mobile number starting with 6-9');
+      return;
+    }
+
+    if (cleanOtp.length !== 4) {
+      setError('Please enter a valid 4-digit OTP (Default: 1234)');
+      return;
+    }
+
     setLoading(true);
     setError('');
     try {
       const res = await axios.post(
         `${API_BASE}/api/v1/auth/login`,
         {
-          phone_number: phone,
-          otp: otp
+          phone_number: cleanPhone,
+          otp: cleanOtp
         },
         { timeout: 3000 }
       );
@@ -30,7 +43,7 @@ export default function AuthScreen({ navigation }: any) {
     } catch (err: any) {
       if (err.response?.data?.detail) {
         setError(`${err.response.data.detail}. Use OTP: 1234`);
-      } else if (otp === '1234' || otp.length >= 4) {
+      } else if (cleanOtp === '1234' || cleanOtp.length === 4) {
         // Fallback for offline / network timeout demo mode
         navigation.navigate('Ekyc');
         return;
@@ -57,22 +70,30 @@ export default function AuthScreen({ navigation }: any) {
         <Text style={styles.loginTitle}>Login / Register</Text>
         <Text style={styles.loginSubtext}>Please fill in your details to access your account</Text>
 
-        <Text style={styles.label}>Mobile Number</Text>
+        <Text style={styles.label}>Mobile Number (10 Digits)</Text>
         <TextInput 
           style={styles.input}
           keyboardType="phone-pad"
           value={phone}
-          onChangeText={setPhone}
-          placeholder="Enter mobile number"
+          maxLength={10}
+          onChangeText={(val) => {
+            setPhone(val.replace(/\D/g, ''));
+            if (error) setError('');
+          }}
+          placeholder="e.g. 9876543210"
           placeholderTextColor="#94a3b8"
         />
         
-        <Text style={styles.label}>One-Time Password (OTP)</Text>
+        <Text style={styles.label}>One-Time Password (OTP - 4 Digits)</Text>
         <TextInput 
           style={styles.input}
           keyboardType="number-pad"
           value={otp}
-          onChangeText={setOtp}
+          maxLength={4}
+          onChangeText={(val) => {
+            setOtp(val.replace(/\D/g, ''));
+            if (error) setError('');
+          }}
           placeholder="Enter OTP (Use 1234)"
           placeholderTextColor="#94a3b8"
           secureTextEntry
