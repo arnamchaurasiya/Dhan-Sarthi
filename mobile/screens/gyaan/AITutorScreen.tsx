@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -44,7 +44,9 @@ interface Message {
 
 interface AITutorScreenProps {
   onBack: () => void;
-  onNavigateToTopic: (topicId: string) => void;
+  onNavigateToTopic?: (topicId: string) => void;
+  selectedLanguage?: string;
+  onSelectLanguage?: (lang: string) => void;
 }
 
 const API_BASE = 'https://dhan-sarthi.onrender.com';
@@ -60,8 +62,10 @@ const SUGGESTED_PROMPTS = [
 export default function AITutorScreen({
   onBack,
   onNavigateToTopic,
+  selectedLanguage = 'English',
+  onSelectLanguage,
 }: AITutorScreenProps) {
-  const [selectedLang, setSelectedLang] = useState('English');
+  const [selectedLang, setSelectedLang] = useState(selectedLanguage);
   const [inputQuery, setInputQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [selectedQuizAnswers, setSelectedQuizAnswers] = useState<{ [msgId: string]: number }>({});
@@ -69,10 +73,25 @@ export default function AITutorScreen({
     {
       id: 'm1',
       sender: 'ai',
-      text: '👋 Namaste! I am your Dhan Gyaan AI Tutor. Ask me any question about REITs, InvITs, Mutual Funds, Bonds, or SEBI regulations in your preferred language.',
+      text: getUITranslation('tutorWelcome', selectedLanguage),
       aiEngine: '🛡️ SEBI AI Engine',
     },
   ]);
+
+  useEffect(() => {
+    setSelectedLang(selectedLanguage);
+    setMessages((prev) => {
+      if (prev.length > 0 && prev[0].id === 'm1') {
+        const updated = [...prev];
+        updated[0] = {
+          ...updated[0],
+          text: getUITranslation('tutorWelcome', selectedLanguage),
+        };
+        return updated;
+      }
+      return prev;
+    });
+  }, [selectedLanguage]);
 
   const handleSend = async (promptText?: string) => {
     const textToAsk = promptText || inputQuery;
@@ -241,18 +260,24 @@ export default function AITutorScreen({
       <View style={styles.langBar}>
         <Globe size={14} color="#64748b" />
         <Text style={styles.langLabel}>Language:</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-          {['English', 'Hindi', 'Punjabi', 'Tamil', 'Telugu', 'Marathi', 'Gujarati'].map((lang) => (
-            <TouchableOpacity
-              key={lang}
-              style={[styles.langChip, selectedLang === lang && styles.langChipActive]}
-              onPress={() => setSelectedLang(lang)}
-            >
-              <Text style={[styles.langChipText, selectedLang === lang && styles.langChipTextActive]}>
-                {lang}
-              </Text>
-            </TouchableOpacity>
-          ))}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: 6 }}>
+          {SUPPORTED_LANGUAGES.map((lang) => {
+            const isSelected = selectedLang === lang.code || selectedLang === lang.label || selectedLang === lang.native;
+            return (
+              <TouchableOpacity
+                key={lang.code}
+                style={[styles.langChip, isSelected && styles.langChipActive]}
+                onPress={() => {
+                  setSelectedLang(lang.code);
+                  if (onSelectLanguage) onSelectLanguage(lang.code);
+                }}
+              >
+                <Text style={[styles.langChipText, isSelected && styles.langChipTextActive]}>
+                  {lang.native}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </ScrollView>
       </View>
 

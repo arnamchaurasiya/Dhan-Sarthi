@@ -25,6 +25,11 @@ import {
 } from 'lucide-react-native';
 import Svg, { Rect, Circle, Path, Text as SvgText } from 'react-native-svg';
 import { LESSONS_DATA, LessonDetail } from './gyaanData';
+import {
+  SUPPORTED_LANGUAGES,
+  getUITranslation,
+  getLessonTranslation,
+} from './gyaanTranslations';
 
 interface LessonContentScreenProps {
   topicId: string;
@@ -32,6 +37,8 @@ interface LessonContentScreenProps {
   onStartQuiz: (quizId: string) => void;
   onBookmarkToggle: (topicId: string) => void;
   isBookmarked: boolean;
+  selectedLanguage?: string;
+  onSelectLanguage?: (lang: string) => void;
 }
 
 export default function LessonContentScreen({
@@ -40,9 +47,18 @@ export default function LessonContentScreen({
   onStartQuiz,
   onBookmarkToggle,
   isBookmarked,
+  selectedLanguage = 'English',
+  onSelectLanguage,
 }: LessonContentScreenProps) {
-  const lesson: LessonDetail = LESSONS_DATA[topicId] || LESSONS_DATA['what_is_reit'];
-  const [selectedLang, setSelectedLang] = useState<'English' | 'हिंदी' | 'தமிழ்' | 'ਪੰਜਾਬੀ'>('English');
+  const rawLesson: LessonDetail = LESSONS_DATA[topicId] || LESSONS_DATA['what_is_reit'];
+  
+  // Find current language option
+  const activeLangObj =
+    SUPPORTED_LANGUAGES.find(
+      (l) => l.code === selectedLanguage || l.label === selectedLanguage || l.native === selectedLanguage
+    ) || SUPPORTED_LANGUAGES[0];
+
+  const lesson = getLessonTranslation(topicId, activeLangObj.label, rawLesson);
 
   return (
     <View style={styles.container}>
@@ -76,18 +92,27 @@ export default function LessonContentScreen({
       {/* Language Switcher Sub-bar */}
       <View style={styles.langBar}>
         <Globe size={14} color="#64748b" />
-        <Text style={styles.langLabel}>Read in:</Text>
-        {(['English', 'हिंदी', 'தமிழ்', 'ਪੰਜਾਬੀ'] as const).map((lang) => (
-          <TouchableOpacity
-            key={lang}
-            style={[styles.langChip, selectedLang === lang && styles.langChipActive]}
-            onPress={() => setSelectedLang(lang)}
-          >
-            <Text style={[styles.langChipText, selectedLang === lang && styles.langChipTextActive]}>
-              {lang}
-            </Text>
-          </TouchableOpacity>
-        ))}
+        <Text style={styles.langLabel}>
+          {getUITranslation('readIn', activeLangObj.label)}
+        </Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+          {SUPPORTED_LANGUAGES.map((lang) => {
+            const isSelected = activeLangObj.code === lang.code;
+            return (
+              <TouchableOpacity
+                key={lang.code}
+                style={[styles.langChip, isSelected && styles.langChipActive]}
+                onPress={() => {
+                  if (onSelectLanguage) onSelectLanguage(lang.code);
+                }}
+              >
+                <Text style={[styles.langChipText, isSelected && styles.langChipTextActive]}>
+                  {lang.native}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
       </View>
 
       {/* Scrollable Lesson Body */}
@@ -161,20 +186,26 @@ export default function LessonContentScreen({
         <View style={styles.simpleBox}>
           <View style={styles.simpleHeader}>
             <HelpCircle size={18} color="#b45309" />
-            <Text style={styles.simpleTitle}>IN SIMPLE WORDS</Text>
+            <Text style={styles.simpleTitle}>
+              {getUITranslation('inSimpleWords', activeLangObj.label)}
+            </Text>
           </View>
           <Text style={styles.simpleText}>{lesson.inSimpleWords}</Text>
         </View>
 
         {/* Simple Explanation */}
         <View style={styles.sectionBlock}>
-          <Text style={styles.sectionHeading}>Detailed Explanation</Text>
+          <Text style={styles.sectionHeading}>
+            {getUITranslation('detailedExplanation', activeLangObj.label)}
+          </Text>
           <Text style={styles.bodyParagraph}>{lesson.explanation}</Text>
         </View>
 
         {/* Key Takeaways */}
         <View style={styles.sectionBlock}>
-          <Text style={styles.sectionHeading}>Key Takeaways</Text>
+          <Text style={styles.sectionHeading}>
+            {getUITranslation('keyTakeaways', activeLangObj.label)}
+          </Text>
           {lesson.keyPoints.map((pt, idx) => (
             <View key={idx} style={styles.bulletRow}>
               <CheckCircle2 size={16} color="#16a34a" style={{ marginTop: 2 }} />
@@ -187,7 +218,9 @@ export default function LessonContentScreen({
         <View style={styles.riskBox}>
           <View style={styles.riskHeader}>
             <AlertTriangle size={18} color="#dc2626" />
-            <Text style={styles.riskTitle}>INVESTOR RISK WARNING</Text>
+            <Text style={styles.riskTitle}>
+              {getUITranslation('investorRiskWarning', activeLangObj.label)}
+            </Text>
           </View>
           {lesson.risks.map((risk, idx) => (
             <View key={idx} style={styles.riskBulletRow}>
@@ -199,7 +232,9 @@ export default function LessonContentScreen({
 
         {/* Investor Considerations */}
         <View style={styles.sectionBlock}>
-          <Text style={styles.sectionHeading}>What to Check Before Investing</Text>
+          <Text style={styles.sectionHeading}>
+            {getUITranslation('whatToCheck', activeLangObj.label)}
+          </Text>
           {lesson.investorConsiderations.map((item, idx) => (
             <View key={idx} style={styles.checkRow}>
               <ShieldCheck size={16} color="#0284c7" style={{ marginTop: 2 }} />
@@ -210,7 +245,9 @@ export default function LessonContentScreen({
 
         {/* Practical Example */}
         <View style={styles.exampleCard}>
-          <Text style={styles.exampleTag}>PRACTICAL EXAMPLE</Text>
+          <Text style={styles.exampleTag}>
+            {getUITranslation('practicalExample', activeLangObj.label)}
+          </Text>
           <Text style={styles.exampleTitle}>{lesson.example.name}</Text>
           <Text style={styles.exampleDesc}>{lesson.example.description}</Text>
         </View>
@@ -226,7 +263,9 @@ export default function LessonContentScreen({
           activeOpacity={0.85}
         >
           <Award size={18} color="#ffffff" />
-          <Text style={styles.quizBtnText}>Take Quick Quiz (+50 Pts)</Text>
+          <Text style={styles.quizBtnText}>
+            {getUITranslation('takeQuizBtn', activeLangObj.label)}
+          </Text>
           <ArrowRight size={18} color="#ffffff" />
         </TouchableOpacity>
       </View>

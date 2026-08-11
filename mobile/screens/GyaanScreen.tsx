@@ -45,6 +45,7 @@ export default function GyaanScreen() {
   const [selectedProduct, setSelectedProduct] = useState<string>('reit');
   const [simulatorInitialTab, setSimulatorInitialTab] = useState<'sip' | 'lumpsum' | 'reit' | 'bond' | 'inflation'>('sip');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('English');
 
   // User Stats & Points
   const [userStats, setUserStats] = useState(INITIAL_USER_STATS);
@@ -145,6 +146,8 @@ export default function GyaanScreen() {
             onNavigate={handleNavigate}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
+            selectedLanguage={selectedLanguage}
+            onSelectLanguage={setSelectedLanguage}
           />
         )}
 
@@ -180,6 +183,8 @@ export default function GyaanScreen() {
             }}
             onBookmarkToggle={handleBookmarkToggle}
             isBookmarked={!!bookmarks.find((b) => b.topicId === selectedTopicId)}
+            selectedLanguage={selectedLanguage}
+            onSelectLanguage={setSelectedLanguage}
           />
         )}
 
@@ -206,6 +211,8 @@ export default function GyaanScreen() {
               setSelectedTopicId(tId);
               handleNavigate('lesson');
             }}
+            selectedLanguage={selectedLanguage}
+            onSelectLanguage={setSelectedLanguage}
           />
         )}
 

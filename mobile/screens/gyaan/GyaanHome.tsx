@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
+  Modal,
 } from 'react-native';
 import {
   BookOpen,
@@ -24,8 +25,12 @@ import {
   PieChart,
   ChevronRight,
   Zap,
+  Globe,
+  ChevronDown,
+  Check,
 } from 'lucide-react-native';
 import { CATEGORIES_DATA } from './gyaanData';
+import { SUPPORTED_LANGUAGES, getUITranslation } from './gyaanTranslations';
 
 interface GyaanHomeProps {
   stats: {
@@ -36,6 +41,8 @@ interface GyaanHomeProps {
   onNavigate: (screen: string, params?: any) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  selectedLanguage?: string;
+  onSelectLanguage?: (lang: string) => void;
 }
 
 export default function GyaanHome({
@@ -43,7 +50,15 @@ export default function GyaanHome({
   onNavigate,
   searchQuery,
   setSearchQuery,
+  selectedLanguage = 'English',
+  onSelectLanguage,
 }: GyaanHomeProps) {
+  const [showLangModal, setShowLangModal] = useState(false);
+
+  const currentLangObj = SUPPORTED_LANGUAGES.find(
+    (l) => l.code === selectedLanguage || l.label === selectedLanguage
+  ) || SUPPORTED_LANGUAGES[0];
+
   const getIcon = (iconName: string, color: string) => {
     const props = { size: 22, color };
     switch (iconName) {
@@ -64,19 +79,32 @@ export default function GyaanHome({
         <View style={styles.headerTop}>
           <View style={{ flex: 1, marginRight: 8 }}>
             <View style={styles.brandRow}>
-              <Text style={styles.brandTitle}>Financial Hub</Text>
+              <Text style={styles.brandTitle}>
+                {getUITranslation('brandTitle', selectedLanguage)}
+              </Text>
             </View>
             <Text style={styles.brandSubtitle}>
-              Learn • Understand • Verify • Invest
+              {getUITranslation('brandSubtitle', selectedLanguage)}
             </Text>
           </View>
-          <TouchableOpacity
-            style={styles.streakBadge}
-            onPress={() => onNavigate('journey')}
-          >
-            <Flame size={16} color="#ea580c" />
-            <Text style={styles.streakText}>{stats.learningStreak} Days</Text>
-          </TouchableOpacity>
+          <View style={{ alignItems: 'flex-end', gap: 6 }}>
+            <TouchableOpacity
+              style={styles.langBtn}
+              onPress={() => setShowLangModal(true)}
+              activeOpacity={0.8}
+            >
+              <Globe size={13} color="#60a5fa" />
+              <Text style={styles.langBtnText}>{currentLangObj.native}</Text>
+              <ChevronDown size={13} color="#93c5fd" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.streakBadge}
+              onPress={() => onNavigate('journey')}
+            >
+              <Flame size={15} color="#ea580c" />
+              <Text style={styles.streakText}>{stats.learningStreak} Days</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Gamification Stats */}
@@ -285,11 +313,143 @@ export default function GyaanHome({
 
 
       <View style={{ height: 40 }} />
+
+      {/* Language Selection Modal */}
+      <Modal
+        visible={showLangModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowLangModal(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setShowLangModal(false)}
+        >
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Globe size={20} color="#2563eb" />
+              <Text style={styles.modalTitle}>Select Language</Text>
+            </View>
+            <Text style={styles.modalSub}>
+              Choose your preferred language for financial education in Dhan Gyaan.
+            </Text>
+
+            <ScrollView style={{ maxHeight: 340 }} showsVerticalScrollIndicator={false}>
+              {SUPPORTED_LANGUAGES.map((lang) => {
+                const isSelected =
+                  selectedLanguage === lang.code || selectedLanguage === lang.label;
+                return (
+                  <TouchableOpacity
+                    key={lang.code}
+                    style={[styles.langOption, isSelected && styles.langOptionSelected]}
+                    onPress={() => {
+                      if (onSelectLanguage) onSelectLanguage(lang.code);
+                      setShowLangModal(false);
+                    }}
+                  >
+                    <View style={styles.langOptionLeft}>
+                      <Text style={[styles.langNative, isSelected && styles.langNativeSelected]}>
+                        {lang.native}
+                      </Text>
+                      <Text style={styles.langLabel}>({lang.label})</Text>
+                    </View>
+                    {isSelected && <Check size={18} color="#2563eb" />}
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  langBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.25)',
+  },
+  langBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#ffffff',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(15, 23, 42, 0.65)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    width: '100%',
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 20,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#0f172a',
+  },
+  modalSub: {
+    fontSize: 12,
+    color: '#64748b',
+    marginTop: 4,
+    marginBottom: 16,
+  },
+  langOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 12,
+    marginBottom: 6,
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  langOptionSelected: {
+    backgroundColor: '#eff6ff',
+    borderColor: '#3b82f6',
+  },
+  langOptionLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  langNative: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1e293b',
+  },
+  langNativeSelected: {
+    color: '#1d4ed8',
+  },
+  langLabel: {
+    fontSize: 12,
+    color: '#64748b',
+  },
   container: {
     flex: 1,
     backgroundColor: '#f8fafc',
