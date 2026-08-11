@@ -63,7 +63,7 @@ export default function Transactions() {
         <View style={styles.divider} />
         <View style={styles.summaryItem}>
           <Text style={styles.summaryLabel}>Total Transactions</Text>
-          <Text style={styles.summaryVal}>{DEFAULT_TRANSACTIONS.length}</Text>
+          <Text style={styles.summaryVal}>{txns.length}</Text>
         </View>
       </View>
 
