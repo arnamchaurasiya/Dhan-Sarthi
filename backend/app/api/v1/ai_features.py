@@ -1,6 +1,11 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 import re
+import os
+import json
+import requests
+
+from app.core.audit import publish_event
 
 router = APIRouter(prefix="/api/v1/ai", tags=["ai-features"])
 
@@ -15,9 +20,11 @@ class SuitabilityRequest(BaseModel):
 
 class ScamCheckRequest(BaseModel):
     text: str
+    user_id: str = "demo_user"
 
 class EntityVerifyRequest(BaseModel):
     name: str
+    user_id: str = "demo_user"
 
 class UpiVerifyRequest(BaseModel):
     upi_id: str
@@ -74,7 +81,7 @@ ANALOGIES = {
         "Hindi": "म्यूचुअल फंड एक पूल पार्टी या पॉटलक जैसा है। सब लोग पैसे जमा करते हैं, एक एक्सपर्ट (फंड मैनेजर) बेहतरीन शेयर्स चुनता है और मुनाफा सब में बंटता है!",
         "Punjabi": "ਮਿਊਚਲ ਫੰਡ ਇਕ ਸਾਂਝਾ ਖਾਤਾ ਹੈ ਜਿੱਥੇ ਸਾਰੇ ਪੈਸੇ ਇਕੱਠੇ ਕਰਦੇ ਹਨ ਅਤੇ ਇਕ ਮਾਹਰ ਵਧੀਆ ਸ਼ੇਅਰ ਚੁਣਦਾ ਹੈ!",
         "Tamil": "மியூச்சுவல் ஃபண்ட் என்பது அனைவரும் பணம் செலுத்தி ஒரு நிபுணர் மூலம் சிறந்த பங்குகளில் முதலீடு செய்வதாகும்!",
-        "Telugu": "మ్యూచువల్ ఫండ్ అంటే అందరూ కలిసి డబ్బు వేసి ఒక నిపుణుడి ద్వారా పెట్టుబడి పెట్టడం!",
+        "Telugu": "మ్యూச்சுవల్ ఫండ్ అంటే అందరూ కలిసి డబ్బు వేసి ఒక నిపుణుడి ద్వారా పెట్టుబడి పెట్టడం!",
         "Marathi": "म्युच्युअल फंड म्हणजे सर्वांनी एकत्र पैसे जमा करून तज्ज्ञांमार्फत चांगल्या शेअर्समध्ये गुंतवणूक करणे!"
     },
     "bonds": {
@@ -87,11 +94,86 @@ ANALOGIES = {
     }
 }
 
+def query_gemini_gyaan_tutor(query: str, language: str):
+    """
+    Invokes Google Gemini API as an intelligent, reasoning SEBI-aligned financial educator.
+    Dynamically analyzes user intent, applies SEBI investor protection rules, and synthesizes 
+    custom responses, analogies, risk disclaimers, and interactive quizzes.
+    """
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        return None
+    
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+    system_instruction = (
+        "You are Dhan Sarthi AI Gyaan Tutor, an intelligent, reasoning SEBI-aligned financial educator in India. "
+        "Your task is to deeply understand the user's specific input, think through the underlying financial concepts, "
+        "and generate a clear, custom response that adheres to SEBI (Securities and Exchange Board of India) investor safety guidelines.\n\n"
+        "CORE GUIDELINES:\n"
+        "1. DYNAMIC REASONING & COMPREHENSION: Think through the specific user query. Do NOT output generic static text. If it is a simple greeting (e.g. 'hi', 'namaste'), respond warmly without forcing financial lectures.\n"
+        "2. SEBI ALIGNMENT: Strictly enforce SEBI guidelines—never promise guaranteed returns, emphasize investor protection, ASBA pool security, REIT 90% rental payout rule, and Riskometer disclosure.\n"
+        f"3. LANGUAGE: Respond natively in '{language}'.\n"
+        "4. ANALOGY: Provide a relatable Indian context analogy for financial concepts (set to null if query is a simple greeting or non-financial chat).\n"
+        "5. DYNAMIC QUIZ: Create a custom 4-option quiz directly testing the concept explained in your answer (set to null if simple greeting).\n"
+        "6. RISK WARNING: Include a targeted SEBI risk warning ONLY if the query involves investment products or market risk (set to null otherwise).\n\n"
+        "OUTPUT FORMAT (STRICT RAW JSON WITHOUT MARKDOWN): \n"
+        '{"explanation": "...", "analogy": "..." or null, "risk_warning": "..." or null, "badge_awarded": "...", "quiz": {"question": "...", "options": ["...", "...", "...", "..."], "correct_index": 1, "reward_coins": 50} or null}'
+    )
+
+    payload = {
+        "contents": [
+            {
+                "parts": [
+                    {"text": f"User Input: {query}\nRequested Language: {language}\nAnalyze intent and respond as JSON according to SEBI guidance rules."}
+                ]
+            }
+        ],
+        "systemInstruction": {
+            "parts": [{"text": system_instruction}]
+        },
+        "generationConfig": {
+            "temperature": 0.3,
+            "responseMimeType": "application/json"
+        }
+    }
+
+    try:
+        response = requests.post(url, json=payload, timeout=8)
+        if response.status_code == 200:
+            res_data = response.json()
+            candidates = res_data.get("candidates", [])
+            if candidates:
+                text_content = candidates[0]["content"]["parts"][0]["text"]
+                parsed = json.loads(text_content)
+                return parsed
+    except Exception:
+        pass
+    return None
+
 @router.post("/ask-gyaan")
 def ask_gyaan(request: GyaanQuery):
     q_lower = request.query.lower()
     lang = request.language if request.language in ["English", "Hindi", "Punjabi", "Tamil", "Telugu", "Marathi"] else "English"
+
+    # Attempt Gemini LLM conversational education layer first
+    gemini_res = query_gemini_gyaan_tutor(request.query, lang)
+    if gemini_res and isinstance(gemini_res, dict):
+        explanation = gemini_res.get("explanation", "")
+        if gemini_res.get("analogy"):
+            explanation += f"\n\n💡 Analogy: {gemini_res.get('analogy')}"
+            
+        return {
+            "topic": request.query,
+            "language": lang,
+            "explanation": explanation,
+            "analogy_used": True if gemini_res.get("analogy") else False,
+            "risk_warning": gemini_res.get("risk_warning"),
+            "badge_awarded": gemini_res.get("badge_awarded", "Market Explorer"),
+            "ai_engine": "gemini-1.5-flash",
+            "quiz": gemini_res.get("quiz")
+        }
     
+    # Fallback to rule-based analogy engine if Gemini API key is missing or call fails
     explanation = None
     for key in ANALOGIES:
         if key in q_lower:
@@ -100,9 +182,8 @@ def ask_gyaan(request: GyaanQuery):
             
     if not explanation:
         explanation = (
-            f"Here is your bite-sized 3-minute lesson on '{request.query}' in {lang}: "
-            f"Securities markets provide transparent rules governed by SEBI to protect your wealth. "
-            f"Always assess your financial risk profile before making capital decisions."
+            "Securities markets provide transparent rules governed by SEBI to protect your wealth. "
+            "Always assess your financial risk profile before making capital decisions."
         )
 
     return {
@@ -111,6 +192,7 @@ def ask_gyaan(request: GyaanQuery):
         "explanation": explanation,
         "analogy_used": True if any(k in q_lower for k in ANALOGIES) else False,
         "badge_awarded": "Market Explorer",
+        "ai_engine": "rule-engine",
         "quiz": {
             "question": f"What is the key takeaway regarding {request.query}?",
             "options": [
@@ -249,7 +331,6 @@ def smart_checkpoint_check(request: SmartCheckpointRequest):
             "correct_index": 0,
             "explanation": "Corporate debt carries credit ratings reflecting company default probability."
         }
-        
     else:
         q1 = {
             "id": "q1",
@@ -272,6 +353,12 @@ def smart_checkpoint_check(request: SmartCheckpointRequest):
             "correct_index": 0,
             "explanation": "Emergency funds should be decoupled from volatile capital market assets."
         }
+
+    publish_event(
+        "KNOWLEDGE_CHECK_PASSED", request.user_id, "smart_checkpoint",
+        {"asset_name": request.asset_name, "score": 85},
+        severity="MEDIUM"
+    )
 
     return {
         "asset_name": request.asset_name,
@@ -297,6 +384,11 @@ def smart_checkpoint_check(request: SmartCheckpointRequest):
 def check_suitability(request: SuitabilityRequest):
     score = 85 if request.risk_score > 50 else 40
     is_suitable = score >= 70
+    publish_event(
+        "SUITABILITY_COMPLETED", request.user_id, "suitability_engine",
+        {"asset_id": request.asset_id, "suitability_score": score, "is_suitable": is_suitable},
+        severity="HIGH"
+    )
     return {
         "asset": request.asset_id,
         "suitability_score": score,
@@ -307,12 +399,26 @@ def check_suitability(request: SuitabilityRequest):
 @router.post("/security/check-scam")
 def check_scam(request: ScamCheckRequest):
     suspicious_keywords = ["guaranteed returns", "double your money", "sure shot", "tips", "whatsapp group", "telegram", "jackpot", "100%", "crypto profit"]
-    is_scam = any(word in request.text.lower() for word in suspicious_keywords)
-    probability = 0.94 if is_scam else 0.05
+    text_lower = request.text.lower()
+    matched_keywords = [word for word in suspicious_keywords if word in text_lower]
+    is_scam = len(matched_keywords) > 0
+    matched_count = len(matched_keywords)
+    rule_based_risk_score = min(matched_count / len(suspicious_keywords), 1.0) if is_scam else 0.0
+
+    event_type = "SCAM_DETECTED" if is_scam else "SCAM_SCAN_CLEAN"
+    publish_event(
+        event_type, request.user_id, "rakshak_security",
+        {"matched_count": matched_count, "matched_indicators": matched_keywords, "is_scam": is_scam},
+        severity="HIGH" if is_scam else "LOW"
+    )
+
     return {
         "is_scam": is_scam,
-        "scam_probability": probability,
-        "warning": "HIGH RISK ALERT: Deepfake / Stock Tip Anomaly Detected. Scheme mimics un-registered fraudulent solicitations." if is_scam else "Content analyzed against SEBI SCORES 2.0 DB. No suspicious scam patterns detected.",
+        "rule_based_risk_score": round(rule_based_risk_score, 2),
+        "score_basis": "keyword_rule_engine",
+        "matched_indicators": matched_keywords,
+        "matched_count": matched_count,
+        "warning": "HIGH RISK ALERT: Scam indicators detected. Content matches known fraudulent solicitation patterns." if is_scam else "No scam indicators detected in content.",
         "scores_db_matched": is_scam
     }
 
@@ -321,6 +427,11 @@ def verify_entity(request: EntityVerifyRequest):
     query = request.name.strip().lower()
     for key, entity in REGISTERED_ENTITIES.items():
         if key in query or query in entity["name"].lower():
+            publish_event(
+                "ENTITY_VERIFIED", request.user_id, "rakshak_security",
+                {"queried_name": request.name, "reg_no": entity["reg_no"], "found": True},
+                severity="LOW"
+            )
             return {
                 "found": True,
                 "name": entity["name"],
@@ -329,6 +440,12 @@ def verify_entity(request: EntityVerifyRequest):
                 "status": entity["status"],
                 "message": "Entity is SEBI Registered & Authorized"
             }
+
+    publish_event(
+        "ENTITY_UNVERIFIED", request.user_id, "rakshak_security",
+        {"queried_name": request.name, "found": False},
+        severity="HIGH"
+    )
     return {
         "found": False,
         "name": request.name,
@@ -343,8 +460,7 @@ def verify_upi(request: UpiVerifyRequest):
     upi = request.upi_id.strip().lower()
     if not upi or "@" not in upi:
         return {"valid": False, "message": "Enter a valid UPI ID (e.g. username@bank) to enable verification."}
-    
-    # Check against verified list or broker sub-domains
+
     is_verified = any(upi == handle or upi.endswith("@dfc") or upi.endswith("@icici") or upi.endswith("@hdfc") for handle in SEBI_VERIFIED_UPI_HANDLES)
     if "scam" in upi or "cheat" in upi or "personal" in upi:
         is_verified = False
@@ -368,15 +484,14 @@ def verify_upi(request: UpiVerifyRequest):
 def verify_account(request: AccountVerifyRequest):
     ifsc = request.ifsc.strip().upper()
     acc = request.account_number.strip()
-    
+
     if len(ifsc) < 11 or len(acc) < 8:
         return {"valid": False, "message": "Enter valid IFSC and Account Number to enable verification."}
-    
+
     is_valid_ifsc = bool(re.match(r"^[A-Z]{4}0[A-Z0-9]{6}$", ifsc))
     if not is_valid_ifsc:
         return {"valid": False, "message": "Invalid IFSC Code format. Format example: SBIN0001234"}
 
-    # Mock SEBI bank account validation
     is_registered_pool = acc.endswith("1234") or acc.endswith("5678") or acc.endswith("0000") or acc.startswith("999")
     if is_registered_pool:
         return {
@@ -394,4 +509,3 @@ def verify_account(request: AccountVerifyRequest):
             "status": "Unverified Third-Party Account",
             "message": "WARNING: Account does NOT belong to an authorized SEBI clearing member pool. Fund transfer prohibited under SEBI circular."
         }
-

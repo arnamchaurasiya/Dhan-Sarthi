@@ -3,6 +3,8 @@ from app.main import app
 
 client = TestClient(app)
 
+from unittest.mock import patch
+
 def test_multilingual_ai_tutor_reit():
     languages = ["English", "Hindi", "Punjabi", "Tamil", "Telugu", "Marathi"]
     for lang in languages:
@@ -17,6 +19,31 @@ def test_multilingual_ai_tutor_reit():
         assert "explanation" in data
         assert len(data["explanation"]) > 20
         assert data["quiz"]["reward_coins"] == 50
+        assert data["ai_engine"] in ["gemini-1.5-flash", "rule-engine"]
+
+def test_gemini_mocked_tutor_response():
+    mock_gemini_payload = {
+        "explanation": "REITs are real estate investment trusts.",
+        "analogy": "Like owning a slice of a shopping mall.",
+        "badge_awarded": "REIT Scholar",
+        "quiz": {
+            "question": "What is a REIT?",
+            "options": ["Real Estate Trust", "Bond", "Crypto", "Commodity"],
+            "correct_index": 0,
+            "reward_coins": 50
+        }
+    }
+    with patch("app.api.v1.ai_features.query_gemini_gyaan_tutor", return_value=mock_gemini_payload):
+        res = client.post(
+            "/api/v1/ai/ask-gyaan",
+            json={"query": "Explain REITs", "language": "English"}
+        )
+        assert res.status_code == 200
+        data = res.json()
+        assert data["ai_engine"] == "gemini-1.5-flash"
+        assert "slice of a shopping mall" in data["explanation"].lower()
+        assert data["badge_awarded"] == "REIT Scholar"
+        assert data["quiz"]["correct_index"] == 0
 
 def test_multilingual_ai_tutor_mutual_funds_and_bonds():
     topics = ["How do Mutual Funds work?", "What are Bonds?"]

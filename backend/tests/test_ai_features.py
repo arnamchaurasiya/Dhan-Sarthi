@@ -68,7 +68,8 @@ def test_check_scam_true():
     )
     assert response.status_code == 200
     assert response.json()["is_scam"] is True
-    assert response.json()["scam_probability"] > 0.8
+    assert response.json()["rule_based_risk_score"] > 0.0
+    assert response.json()["score_basis"] == "keyword_rule_engine"
 
 def test_check_scam_false():
     response = client.post(
@@ -77,6 +78,7 @@ def test_check_scam_false():
     )
     assert response.status_code == 200
     assert response.json()["is_scam"] is False
+    assert response.json()["rule_based_risk_score"] == 0.0
 
 def test_verify_entity():
     res = client.post("/api/v1/ai/security/verify-entity", json={"name": "Zerodha Broking Ltd."})
@@ -93,4 +95,3 @@ def test_verify_account():
     res = client.post("/api/v1/ai/security/verify-account", json={"ifsc": "SBIN0001234", "account_number": "99912345678"})
     assert res.status_code == 200
     assert res.json()["valid"] is True
-

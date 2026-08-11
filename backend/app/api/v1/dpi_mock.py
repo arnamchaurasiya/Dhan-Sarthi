@@ -1,29 +1,43 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-import time
+from app.core.audit import publish_event
 
 router = APIRouter(prefix="/api/v1/mock-dpi", tags=["mock-dpi"])
 
 class ConsentRequest(BaseModel):
-    user_id: str
-    fip_ids: list[str]
-    
+    user_id: str = "demo_user"
+    fip_ids: list[str] = ["zerodha_cdsl", "groww_cams", "kuvera_kfintech"]
+
 @router.post("/aa/consent")
 def submit_aa_consent(request: ConsentRequest):
-    # Simulate a network delay for the consent flow
-    # time.sleep(1)
+    handle = "mock-consent-handle-84920"
+    publish_event(
+        "AA_CONSENT_GRANTED", request.user_id, "mock_dpi",
+        {"consent_handle": handle, "fip_ids": request.fip_ids},
+        severity="HIGH"
+    )
     return {
         "status": "APPROVED",
-        "consent_handle": "mock-consent-handle-84920",
+        "consent_handle": handle,
         "message": "Consent granted to fetch data from FIPs."
     }
 
 @router.get("/aa/fetch-holdings/{consent_handle}")
 def fetch_holdings(consent_handle: str):
     if consent_handle != "mock-consent-handle-84920":
+        publish_event(
+            "PORTFOLIO_SYNC_FAILED", "unknown", "mock_dpi",
+            {"handle": consent_handle, "reason": "invalid_handle"},
+            severity="HIGH"
+        )
         return {"error": "Invalid consent handle"}
-    
-    # Returning a realistic, unified mock payload across asset classes
+
+    publish_event(
+        "PORTFOLIO_SYNCHRONIZED", "demo_user", "mock_dpi",
+        {"consent_handle": consent_handle, "asset_classes": 6, "total_net_worth": 793450.00},
+        severity="MEDIUM"
+    )
+
     return {
         "status": "SUCCESS",
         "data": {
